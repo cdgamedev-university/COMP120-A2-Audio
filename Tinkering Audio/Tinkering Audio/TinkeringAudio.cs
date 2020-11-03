@@ -7,14 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NAudio;
+using NAudio.Wave;
 
-namespace Tinkering_Audio
-{
-    public partial class TinkAud : Form
-    {
-        public TinkAud()
-        {
+namespace Tinkering_Audio {
+    public partial class TinkeringAudioForm : Form {
+        public TinkeringAudioForm() {
             InitializeComponent();
+        }
+
+        private void TinkeringAudioForm_Load(object sender, EventArgs e) {
+
         }
     }
 }

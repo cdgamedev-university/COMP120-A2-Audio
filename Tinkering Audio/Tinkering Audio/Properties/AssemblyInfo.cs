@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tinkering_Audio")]
+[assembly: AssemblyTitle("Tinkering Audio")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tinkering_Audio")]
+[assembly: AssemblyProduct("Tinkering Audio")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3fe3988d-95f7-436a-a48f-f521f91b14ca")]
+[assembly: Guid("96ba74fb-c39e-40e6-bd8c-ef33f451663d")]
 
 // Version information for an assembly consists of the following four values:
 //
