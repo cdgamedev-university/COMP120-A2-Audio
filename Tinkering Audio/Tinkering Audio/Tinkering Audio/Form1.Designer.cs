@@ -1,4 +1,4 @@
-﻿namespace Tinkering_Audio {
+﻿namespace TinkeringAudio {
     partial class TinkeringAudioForm {
         /// <summary>
         /// Required designer variable.
