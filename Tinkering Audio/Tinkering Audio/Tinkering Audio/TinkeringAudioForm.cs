@@ -190,12 +190,14 @@ namespace TinkeringAudio {
             return Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
         }
 
+        // a non-sinusoidal wave with a triangular shape 
         private double TriangleWave(double frequency, int position) 
         {
             double value = ((2.0 * MAX_VALUE * volume) / Math.PI) *Math.Asin(Math.Sin(2.0 * Math.PI * frequency * position));
             return value;
         }
 
+        // another non-sinusoidal wave which ramps upwards, drops down and repeats
         private double SawtoothWave(double frequency, int position) 
         {
             double value = (-(2.0 * MAX_VALUE * volume) / Math.PI) * Math.Atan((1 / Math.Tan(Math.PI * frequency * position)));
