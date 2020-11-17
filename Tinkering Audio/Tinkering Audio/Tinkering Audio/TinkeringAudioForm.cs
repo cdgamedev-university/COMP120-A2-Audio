@@ -231,5 +231,34 @@ namespace TinkeringAudio {
             waveOut.Play();
         }
         #endregion
+
+        #region MELODY BUTTONS
+
+        // must create 4 new melodies using waves to create ambient music for 
+
+        private void Villagebtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void Forestbtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void Cavebtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void Oceanbtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion
     }
 }
