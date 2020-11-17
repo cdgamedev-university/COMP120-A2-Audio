@@ -236,6 +236,9 @@ namespace TinkeringAudio {
 
         // must create 4 new melodies using waves to create ambient music for 
 
+        public double frequency;
+        public double duration;
+
         private void Villagebtn_Click(object sender, EventArgs e)
         {
 
