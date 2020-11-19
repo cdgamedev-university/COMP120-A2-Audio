@@ -268,6 +268,41 @@ namespace TinkeringAudio {
 
         #region MELODY BUTTONS
 
+        private double AudioSplicing (double audSamp1, double audSamp2)
+        {
+            
+        }
+
+        private double AddingEchos (List<int> inputList, double seconds)
+        {
+            
+        }
+
+        private double Normalisation (double audSamp)
+        {
+
+        }
+
+        private double Resample (double audSamp, int audScale)
+        {
+
+        }
+
+        private double ScalingAmplitude (double audSamp, double volFactor)
+        {
+
+        }
+
+        private double ToneCombine (double duration, double freq, double w)
+        {
+
+        }
+
+        private double WhiteNoise (double t, double resultantVol)
+        {
+
+        }
+
         // must create 4 new melodies using waves to create ambient music for 
 
         public double frequency;
