@@ -35,55 +35,89 @@ namespace TinkeringAudio {
         private List<double> notes;
         private double[] noteDuration;
         #endregion
-
+        // initialise form
         public TinkeringAudioForm() {
             InitializeComponent();
         }
 
-        private void TinkeringAudioForm_Load(object sender, EventArgs e) 
-        {
-            this.waveFunction = SawtoothWave;
+        // when the form loads
+        private void TinkeringAudioForm_Load(object sender, EventArgs e) {
+            // set the wave function
+            this.waveFunction = SquareWave;
+            // populate notes with notes
             notes = PopulateNotes(440, -16, 8, 2);
+            // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
         }
 
         #region GENERATE FUNCTIONS
-        private List<int> GenerateSilence(double durationInSeconds) 
-        {
+        /// <summary>
+        /// function to generate silence
+        /// </summary>
+        /// <param name="durationInSeconds">how long the silence should play in seconds</param>
+        /// <returns>returns notes as a List of ints</returns>
+        private List<int> GenerateSilence(double durationInSeconds) {
+            // calculate the total size of the sample
+            int totalSampleSize = (int)(durationInSeconds * SAMPLE_RATE);
+
+            // declare the silence as a new List of ints
             List<int> silence = new List<int>();
 
-            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) 
-            {
+            // run through the list and set all samples to 0
+            for (int i = 0; i < totalSampleSize; i++) {
                 silence.Add(0);
             }
+
+            // return the newly generated silence
             return silence;
         }
 
-        private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) 
-        {
+        /// <summary>
+        /// function to generate a random tone
+        /// </summary>
+        /// <param name="durationInSeconds">how long the tones should play for</param>
+        /// <param name="waveFunction">the wave function to generate the sounds</param>
+        /// <param name="frequencies">the freequencies to play</param>
+        /// <returns>returns a tone as a List of ints</returns>
+        private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) {
+            // delcare the tone as a new List<int>
             List<int> tone = new List<int>();
 
+            // declare the value with the short type
             short value;
 
-            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) 
-            {
+            // run through the duration of the clip
+            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) {
+                // set value to 0
                 value = 0;
+                // run through the the frequencies
                 for (int j = 0; j < frequencies.Length; j++) 
                 {
+                    // adjust the value of the tone
                     value += (short)(MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
                 }
+                // add the value to the list of tone
                 tone.Add(BitConverter.GetBytes(value)[0]);
             }
+            // return the tone
             return tone;
         }
 
-        private List<int> GenerateRandomMelody(int countOfNotesToPlay) 
-        {
+        /// <summary>
+        /// generate a random melody
+        /// </summary>
+        /// <param name="countOfNotesToPlay">the number of notes to play</param>
+        /// <returns>a list of ints for the melody</returns>
+        private List<int> GenerateRandomMelody(int countOfNotesToPlay) {
+            // generate a new random
             Random prng = new Random();
 
+            // define a new list
             List<int> melody = new List<int>();
+            // add .1 seconds of silence at the start
             melody.AddRange(GenerateSilence(0.1));
 
+            // create a new double array for the frequencies
             double[] frequencies = new double[2];
 
             for (int i = 0; i < countOfNotesToPlay; i++) 
@@ -241,7 +275,7 @@ namespace TinkeringAudio {
 
         private void Villagebtn_Click(object sender, EventArgs e)
         {
-
+            GenerateSilence(1);
         }
 
 
