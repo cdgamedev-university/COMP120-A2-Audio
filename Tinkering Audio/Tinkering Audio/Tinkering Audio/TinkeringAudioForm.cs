@@ -236,12 +236,54 @@ namespace TinkeringAudio {
 
         private double AudioSplicing (double audSamp1, double audSamp2)
         {
-            
-        }
+            // declare list
+            List<int> note = ();
+
+            for (int i = 0; i < (audSamp1); i++)
+            {
+                // (S) audSamp1i is appened to n
+            }
+
+            for (int j = 0, j < (audSamp2); j++)
+            {
+                // (T) audSamp2j is appended to n
+            }
+
+            return note;
+
+        }   
 
         private double AddingEchos (List<int> inputList, double seconds)
         {
-            
+            // required: 
+            // 1 =< t
+            // 1 =< (S) SAMPLE_RATE; 
+
+            // there is an input list s, where the input is extended by t seconds
+            // combines input list with delayed copy of itself
+
+            List<int> note = ();
+            double o = seconds * SAMPLE_RATE;
+
+            for (int i = 0; i < (inputList.Count) + o; i++)
+            {
+                double v = 0;
+
+                if (i < Len(sample)
+                {
+                    v = v + i;
+                }
+
+                if (i - o > 0)
+                {
+                    v = v + i;
+                }
+
+                note = v;
+            }
+
+            return note;
+
         }
 
         private double Normalisation (double audSamp)
@@ -270,9 +312,6 @@ namespace TinkeringAudio {
         }
 
         // must create 4 new melodies using waves to create ambient music for 
-
-        public double frequency;
-        public double duration;
 
         private void Villagebtn_Click(object sender, EventArgs e)
         {
