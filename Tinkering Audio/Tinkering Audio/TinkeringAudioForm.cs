@@ -35,90 +35,159 @@ namespace TinkeringAudio {
         private List<double> notes;
         private double[] noteDuration;
         #endregion
-
+        // initialise form
         public TinkeringAudioForm() {
             InitializeComponent();
         }
 
-        private void TinkeringAudioForm_Load(object sender, EventArgs e) 
-        {
-            this.waveFunction = SawtoothWave;
+        // when the form loads
+        private void TinkeringAudioForm_Load(object sender, EventArgs e) {
+            // set the wave function
+            this.waveFunction = SquareWave;
+            // populate notes with notes
             notes = PopulateNotes(440, -16, 8, 2);
+            // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
         }
 
         #region GENERATE FUNCTIONS
-        private List<int> GenerateSilence(double durationInSeconds) 
-        {
+        /// <summary>
+        /// function to generate silence
+        /// </summary>
+        /// <param name="durationInSeconds">how long the silence should play in seconds</param>
+        /// <returns>returns notes as a List of ints</returns>
+        private List<int> GenerateSilence(double durationInSeconds) {
+            // calculate the duration of the sample
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+
+            // declare the silence as a new List of ints
             List<int> silence = new List<int>();
 
-            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) 
-            {
+            // run through the list and set all samples to 0
+            for (int i = 0; i < sampleDuration; i++) {
                 silence.Add(0);
             }
+
+            // return the newly generated silence
             return silence;
         }
 
-        private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) 
-        {
+        /// <summary>
+        /// function to generate a random tone
+        /// </summary>
+        /// <param name="durationInSeconds">how long the tones should play for</param>
+        /// <param name="waveFunction">the wave function to generate the sounds</param>
+        /// <param name="frequencies">the freequencies to play</param>
+        /// <returns>returns a tone as a List of ints</returns>
+        private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) {
+            // calculate the duration of the sample
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+
+            // delcare the tone as a new List<int>
             List<int> tone = new List<int>();
 
+            // declare the value with the short type
             short value;
 
-            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) 
-            {
+            // run through the duration of the clip
+            for (int i = 0; i < sampleDuration; i++) {
+                // set value to 0
                 value = 0;
+                // run through the the frequencies
                 for (int j = 0; j < frequencies.Length; j++) 
                 {
+                    // adjust the value of the tone
                     value += (short)(MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
                 }
+                // add the value to the list of tone
                 tone.Add(BitConverter.GetBytes(value)[0]);
             }
+            // return the tone
             return tone;
         }
 
-        private List<int> GenerateRandomMelody(int countOfNotesToPlay) 
-        {
+        /// <summary>
+        /// generate a random melody
+        /// </summary>
+        /// <param name="countOfNotesToPlay">the number of notes to play</param>
+        /// <returns>a list of ints for the melody</returns>
+        private List<int> GenerateRandomMelody(int countOfNotesToPlay) {
+            // generate a new random
             Random prng = new Random();
 
+            // define a new list
             List<int> melody = new List<int>();
+            // add .1 seconds of silence at the start
             melody.AddRange(GenerateSilence(0.1));
 
-            double[] frequencies = new double[2];
+            // create a new double to store the frequency
+            double frequency;
 
-            for (int i = 0; i < countOfNotesToPlay; i++) 
-            {
-                frequencies[0] = GetRandomElement(notes, prng);
-                //frequencies[1] = GetRandomElement(notes, prng);
+            // run through for the amount of notes to play
+            for (int i = 0; i < countOfNotesToPlay; i++) {
+                // choose a random frequency
+                frequency = GetRandomElement(notes, prng);
 
-                melody.AddRange(GenerateTone(GetRandomElement(noteDuration, prng), this.waveFunction, frequencies));
+                // add the frequency with a random length to melody
+                melody.AddRange(GenerateTone(GetRandomElement(noteDuration, prng), this.waveFunction, new double[] {frequency}));
             }
+
+            // return the melody
             return melody;
         }
 
-        private List<int> GenerateWhiteNoise(int durationInSeconds) 
-        {
+        /// <summary>
+        /// function to generate white noise
+        /// </summary>
+        /// <param name="durationInSeconds">how long (in seconds) to play the white noise for</param>
+        /// <returns>the white noise</returns>
+        private List<int> GenerateWhiteNoise(int durationInSeconds) {
+            // calculate the duration of the sample
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+
+            // create a new random
             Random prng = new Random();
 
+            // create a new list for the noise
             List<int> noise = new List<int>();
 
-            for (int i = 0; i < (int)(durationInSeconds * SAMPLE_RATE); i++) 
+            // run through for the sample duration
+            for (int i = 0; i < sampleDuration; i++) 
             {
+                // generate a random value
                 int value = (int)(prng.Next(-1, 1) * volume * MAX_VALUE);
+                // add the value to the noise list
                 noise.Add(value);
             }
 
+            // return the random noise
             return noise;
         }
         #endregion
 
         #region WAVE FUNCTIONS
-        private static T GetRandomElement<T>(IEnumerable<T> enumerable, Random rng) 
+        /// <summary>
+        /// get a random element from an array
+        /// </summary>
+        /// <typeparam name="T">generic type</typeparam>
+        /// <param name="enumerable">the list to choose from</param>
+        /// <param name="prng">the pseudo random number generator</param>
+        /// <returns></returns>
+        private static T GetRandomElement<T>(IEnumerable<T> enumerable, Random prng) 
         {
-            int index = rng.Next(0, enumerable.Count());
+            // get a random index and return the value of that index
+            int index = prng.Next(0, enumerable.Count());
             return enumerable.ElementAt(index);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="baseNote"></param>
+        /// <param name="startNote"></param>
+        /// <param name="endNote"></param>
+        /// <param name="increment"></param>
+        /// <returns></returns>
         private List<double> PopulateNotes(double baseNote, int startNote, int endNote, int increment) 
         {
             double ESTIMATOR = Math.Pow(2.0, (1.0 / 12.0));
@@ -129,6 +198,7 @@ namespace TinkeringAudio {
             {
                 notes.Add(baseNote * Math.Pow(ESTIMATOR, i));
             }
+
             return notes;
         }
 
@@ -289,33 +359,38 @@ namespace TinkeringAudio {
         private double Normalisation (double audSamp)
         {
 
+            return 0.0;
         }
 
         private double Resample (double audSamp, int audScale)
         {
 
+            return 0.0;
         }
 
         private double ScalingAmplitude (double audSamp, double volFactor)
         {
 
+            return 0.0;
         }
 
         private double ToneCombine (double duration, double freq, double w)
         {
 
+            return 0.0;
         }
 
         private double WhiteNoise (double t, double resultantVol)
         {
 
+            return 0.0;
         }
 
         // must create 4 new melodies using waves to create ambient music for 
 
         private void Villagebtn_Click(object sender, EventArgs e)
         {
-
+            GenerateSilence(1);
         }
 
 
