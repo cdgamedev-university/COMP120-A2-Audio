@@ -420,18 +420,25 @@ namespace TinkeringAudio {
 
         }
 
-        private double Normalisation (List<int> audSamp)
+        private List<int> Normalisation (List<int> audSamp)
         {
-            int n = 0;
+            int NormalisationList = 0;
 
             for (int i = 0; i < audSamp.Count; i++)
             {
-                n = Math.Max(n, (audSamp[i]));
+                NormalisationList = Math.Max(NormalisationList, (audSamp[i]));
             }
 
-            
+            int o = NormalisationList / 32767;
 
-            return 0.0;
+            for (int i = 0; i < (audSamp.Count); i++)
+            {
+                int p = 0;
+                p = o * audSamp[i];
+                audSamp[i] = p;
+            }
+
+            return audSamp;
         }
 
         private double Resample (double audSamp, int audScale)
