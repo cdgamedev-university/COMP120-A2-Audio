@@ -1,4 +1,6 @@
-﻿using System;
+﻿/// Authors: Daisy Baker & Hayley Davies © 2020
+/// License: 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -272,15 +274,22 @@ namespace TinkeringAudio {
         #region WAVE TYPES
         
         // this is a wave which amplitude alternates at a freq between fixed min and max values
+        /// <summary>
+        /// return 1 or -1 depending on the value of the wave
+        /// </summary>
+        /// <param name="frequency">the frequency of the wave</param>
+        /// <param name="position">the position of the sample</param>
+        /// <returns></returns>
         private double SquareWave(double frequency, int position) {
-            // work out the 
+            // calculate the value
             double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
 
+            // if the value is greater than 0, return 1
             if (value > 0) 
             {
                 return 1.0;
             } 
-
+            // otherwise, return -1
             else 
             {
                 return -1.0;
@@ -288,21 +297,42 @@ namespace TinkeringAudio {
         }
 
         // a smooth wave with peridoic oscillation
+        /// <summary>
+        /// return a smooth wave
+        /// </summary>
+        /// <param name="frequency">the frequency of the wave</param>
+        /// <param name="position">the position of the sample</param>
+        /// <returns>the value</returns>
         private double SineWave(double frequency, int position) 
         {
+            // generate the frequency from the sin wave
             return Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
         }
 
-        // a non-sinusoidal wave with a triangular shape 
+        // a non-sinusoidal wave with a triangular shape
+        /// <summary>
+        /// create the wave in the shape of a triangle wave
+        /// </summary>
+        /// <param name="frequency">the frequency of the wave</param>
+        /// <param name="position">the position of the sample</param>
+        /// <returns>returns a value manipulated to look like a triangle wave</returns>
         private double TriangleWave(double frequency, int position) 
         {
+            // calculate the value and return it
             double value = ((2.0 * MAX_VALUE * volume) / Math.PI) *Math.Asin(Math.Sin(2.0 * Math.PI * frequency * position));
             return value;
         }
 
         // another non-sinusoidal wave which ramps upwards, drops down and repeats
+        /// <summary>
+        /// create the wave in the shape of a sawtooth
+        /// </summary>
+        /// <param name="frequency">the frequency of the wave</param>
+        /// <param name="position">the position of the sample</param>
+        /// <returns>the manipulated value</returns>
         private double SawtoothWave(double frequency, int position) 
         {
+            // calculate and return the value
             double value = (-(2.0 * MAX_VALUE * volume) / Math.PI) * Math.Atan((1 / Math.Tan(Math.PI * frequency * position)));
             return value;
         }
