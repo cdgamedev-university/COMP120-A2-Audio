@@ -35,6 +35,7 @@ namespace TinkeringAudio {
         private List<double> notes;
         private double[] noteDuration;
         #endregion
+
         // initialise form
         public TinkeringAudioForm() {
             InitializeComponent();
@@ -314,11 +315,12 @@ namespace TinkeringAudio {
         private double AudioSplicing (double audSamp1, double audSamp2)
         {
             // declare list
-            List<int> note = ();
+            List<int> note;
 
             for (int i = 0; i < (audSamp1); i++)
             {
                 // (S) audSamp1i is appened to n
+                
             }
 
             for (int j = 0, j < (audSamp2); j++)
