@@ -312,27 +312,28 @@ namespace TinkeringAudio {
 
         #region MELODY BUTTONS
 
-        private double AudioSplicing (double audSamp1, double audSamp2)
+        private List<int> AudioSplicing (List<int> audSamp1, List<int> audSamp2)
         {
             // declare list
-            List<int> note;
+            List<int> SplicedList = new List<int>();
 
-            for (int i = 0; i < (audSamp1); i++)
+            for (int i = 0; i < (audSamp1.Count); i++)
             {
                 // (S) audSamp1i is appened to n
-                
+                SplicedList.Add(audSamp1[i]);
             }
 
-            for (int j = 0, j < (audSamp2); j++)
+            for (int j = 0; j < (audSamp2.Count); j++)
             {
-                // (T) audSamp2j is appended to n
+                // (T) audSamp2j is appended to new
+                SplicedList.Add(audSamp2[j]);
             }
 
-            return note;
+            return SplicedList;
 
         }   
 
-        private double AddingEchos (List<int> inputList, double seconds)
+        private List<int> AddingEchos (List<int> inputList, int seconds)
         {
             // required: 
             // 1 =< t
@@ -341,32 +342,42 @@ namespace TinkeringAudio {
             // there is an input list s, where the input is extended by t seconds
             // combines input list with delayed copy of itself
 
-            List<int> note = ();
-            double o = seconds * SAMPLE_RATE;
+            List<int> EchoList = new List<int>();
 
-            for (int i = 0; i < (inputList.Count) + o; i++)
+            int sampleDuration = seconds * SAMPLE_RATE;
+
+            for (int i = 0; i < (inputList.Count) + sampleDuration; i++)
             {
-                double v = 0;
+                int value = 0;
 
-                if (i < Len(sample)
+                if (i < inputList.Count)
                 {
-                    v = v + i;
+                    value = value + inputList[i];
                 }
 
-                if (i - o > 0)
+                if (i - sampleDuration > 0)
                 {
-                    v = v + i;
+                    value= value+ inputList[i - sampleDuration];
+                    
                 }
 
-                note = v;
+                EchoList.Add(value);
             }
 
-            return note;
+            return EchoList;
 
         }
 
-        private double Normalisation (double audSamp)
+        private double Normalisation (List<int> audSamp)
         {
+            int n = 0;
+
+            for (int i = 0; i < audSamp.Count; i++)
+            {
+                n = Math.Max(n, (audSamp[i]));
+            }
+
+            
 
             return 0.0;
         }
