@@ -35,6 +35,7 @@ namespace TinkeringAudio {
         private List<double> notes;
         private double[] noteDuration;
         #endregion
+
         // initialise form
         public TinkeringAudioForm() {
             InitializeComponent();
@@ -44,13 +45,16 @@ namespace TinkeringAudio {
         private void TinkeringAudioForm_Load(object sender, EventArgs e) {
             // set the wave function
             this.waveFunction = SquareWave;
+
             // populate notes with notes
             notes = PopulateNotes(440, -16, 8, 2);
+
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
         }
 
         #region GENERATE FUNCTIONS
+
         /// <summary>
         /// function to generate silence
         /// </summary>
@@ -93,6 +97,7 @@ namespace TinkeringAudio {
             for (int i = 0; i < sampleDuration; i++) {
                 // set value to 0
                 value = 0;
+
                 // run through the the frequencies
                 for (int j = 0; j < frequencies.Length; j++) 
                 {
@@ -117,6 +122,7 @@ namespace TinkeringAudio {
 
             // define a new list
             List<int> melody = new List<int>();
+
             // add .1 seconds of silence at the start
             melody.AddRange(GenerateSilence(0.1));
 
@@ -156,6 +162,7 @@ namespace TinkeringAudio {
             {
                 // generate a random value
                 int value = (int)(prng.Next(-1, 1) * volume * MAX_VALUE);
+
                 // add the value to the noise list
                 noise.Add(value);
             }
@@ -166,6 +173,7 @@ namespace TinkeringAudio {
         #endregion
 
         #region WAVE FUNCTIONS
+
         /// <summary>
         /// get a random element from an array
         /// </summary>
@@ -326,19 +334,72 @@ namespace TinkeringAudio {
 
         #region MELODY BUTTONS
 
-        private double AudioSplicing (double audSamp1, double audSamp2)
+        private List<int> AudioSplicing (List<int> audSamp1, List<int> audSamp2)
         {
-            return 0.0;
+            // declare list
+            List<int> SplicedList = new List<int>();
+
+            for (int i = 0; i < (audSamp1.Count); i++)
+            {
+                // (S) audSamp1i is appened to n
+                SplicedList.Add(audSamp1[i]);
+            }
+
+            for (int j = 0; j < (audSamp2.Count); j++)
+            {
+                // (T) audSamp2j is appended to new
+                SplicedList.Add(audSamp2[j]);
+            }
+
+            return SplicedList;
+
+        }   
+
+        private List<int> AddingEchos (List<int> inputList, int seconds)
+        {
+            // required: 
+            // 1 =< t
+            // 1 =< (S) SAMPLE_RATE; 
+
+            // there is an input list s, where the input is extended by t seconds
+            // combines input list with delayed copy of itself
+
+            List<int> EchoList = new List<int>();
+
+            int sampleDuration = seconds * SAMPLE_RATE;
+
+            for (int i = 0; i < (inputList.Count) + sampleDuration; i++)
+            {
+                int value = 0;
+
+                if (i < inputList.Count)
+                {
+                    value = value + inputList[i];
+                }
+
+                if (i - sampleDuration > 0)
+                {
+                    value= value+ inputList[i - sampleDuration];
+                    
+                }
+
+                EchoList.Add(value);
+            }
+
+            return EchoList;
+
         }
 
-        private double AddingEchos (List<int> inputList, double seconds)
+        private double Normalisation (List<int> audSamp)
         {
+            int n = 0;
 
-            return 0.0;
-        }
+            for (int i = 0; i < audSamp.Count; i++)
+            {
+                n = Math.Max(n, (audSamp[i]));
+            }
 
-        private double Normalisation (double audSamp)
-        {
+            
 
             return 0.0;
         }
@@ -368,9 +429,6 @@ namespace TinkeringAudio {
         }
 
         // must create 4 new melodies using waves to create ambient music for 
-
-        public double frequency;
-        public double duration;
 
         private void Villagebtn_Click(object sender, EventArgs e)
         {
