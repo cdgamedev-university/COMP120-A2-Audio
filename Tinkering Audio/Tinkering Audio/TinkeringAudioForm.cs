@@ -181,57 +181,79 @@ namespace TinkeringAudio {
         }
 
         /// <summary>
-        /// 
+        /// create a list of notes
         /// </summary>
-        /// <param name="baseNote"></param>
-        /// <param name="startNote"></param>
-        /// <param name="endNote"></param>
-        /// <param name="increment"></param>
-        /// <returns></returns>
+        /// <param name="baseNote">the note which should be used as a multiplier</param>
+        /// <param name="startNote">the start note</param>
+        /// <param name="endNote">the end note</param>
+        /// <param name="increment">how much the list should increment by</param>
+        /// <returns>a List of doubles called notes</returns>
         private List<double> PopulateNotes(double baseNote, int startNote, int endNote, int increment) 
         {
+            // work out the estimator
             double ESTIMATOR = Math.Pow(2.0, (1.0 / 12.0));
 
+            // create a new list of notes
             List<double> notes = new List<double>();
 
+            // run through the notes, increasing by increment each iteration
             for (int i = startNote; i < endNote; i += increment) 
             {
+                // add a new note
                 notes.Add(baseNote * Math.Pow(ESTIMATOR, i));
             }
 
+            // return the newly generated notes
             return notes;
         }
 
-        private IWaveProvider convertToWaveProvider16(List<int> sample, int sampleRate, int channelCount) 
-        {
+        /// <summary>
+        /// converts a waveform as int to a waveform
+        /// </summary>
+        /// <param name="sample">the sample to convert</param>
+        /// <param name="sampleRate">the sample rate of the audio</param>
+        /// <param name="channelCount">the amount of channels the soundtrack has</param>
+        /// <returns>the new wave provider</returns>
+        private IWaveProvider convertToWaveProvider16(List<int> sample, int sampleRate, int channelCount) {
+            // create a new array of bytes as we are dealing with 16 bit sound
             byte[] byteBuffer = new byte[sample.Count * 2];
 
+            // set the array index to 0
             int byteArrayIndex = 0;
+            
+            // declare a value
             short value;
 
+            // run through the sample
             for (int i = 0; i < sample.Count; i++) 
             {
+                // if the sample value is greater than the max value
+                // set the value to the max value
                 if (sample[i] > MAX_VALUE) 
                 {
                     value = (short)MAX_VALUE;
                 } 
-                
+                // else if the sample value is less than the minimum value
+                // set the value to the min value
                 else if (sample[i] < -MAX_VALUE) 
                 {
                     value = (short)-MAX_VALUE;
                 } 
-                
+                // otherwise set the value to the sample value
                 else 
                 {
                     value = (short)sample[i];
                 }
 
+                // add the value to the byte buffer
                 byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[0];
                 byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[1];
             }
 
+            // create a new waveprovider using the converted bytes
             IWaveProvider waveProvider = new RawSourceWaveStream(new MemoryStream(byteBuffer), new WaveFormat(sampleRate, 16, channelCount));
 
+            // return the wave provider
             return waveProvider;
         }
         #endregion
@@ -239,8 +261,8 @@ namespace TinkeringAudio {
         #region WAVE TYPES
         
         // this is a wave which amplitude alternates at a freq between fixed min and max values
-        private double SquareWave(double frequency, int position) 
-        {
+        private double SquareWave(double frequency, int position) {
+            // work out the 
             double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
 
             if (value > 0) 
