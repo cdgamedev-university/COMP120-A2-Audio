@@ -44,13 +44,16 @@ namespace TinkeringAudio {
         private void TinkeringAudioForm_Load(object sender, EventArgs e) {
             // set the wave function
             this.waveFunction = SquareWave;
+
             // populate notes with notes
             notes = PopulateNotes(440, -16, 8, 2);
+
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
         }
 
         #region GENERATE FUNCTIONS
+
         /// <summary>
         /// function to generate silence
         /// </summary>
@@ -93,6 +96,7 @@ namespace TinkeringAudio {
             for (int i = 0; i < sampleDuration; i++) {
                 // set value to 0
                 value = 0;
+
                 // run through the the frequencies
                 for (int j = 0; j < frequencies.Length; j++) 
                 {
@@ -117,6 +121,7 @@ namespace TinkeringAudio {
 
             // define a new list
             List<int> melody = new List<int>();
+
             // add .1 seconds of silence at the start
             melody.AddRange(GenerateSilence(0.1));
 
@@ -156,6 +161,7 @@ namespace TinkeringAudio {
             {
                 // generate a random value
                 int value = (int)(prng.Next(-1, 1) * volume * MAX_VALUE);
+
                 // add the value to the noise list
                 noise.Add(value);
             }
@@ -166,6 +172,7 @@ namespace TinkeringAudio {
         #endregion
 
         #region WAVE FUNCTIONS
+
         /// <summary>
         /// get a random element from an array
         /// </summary>
