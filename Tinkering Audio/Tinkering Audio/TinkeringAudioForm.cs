@@ -76,7 +76,13 @@ namespace TinkeringAudio {
         private double[] noteDuration;
         #endregion
 
+<<<<<<< HEAD
         // initialise the form
+=======
+        #region FORM INITIALISATION AND LOADS
+
+        // initialise form
+>>>>>>> 682de8432e4a4abec098a902ef273ec90a5bc694
         public TinkeringAudioForm() {
             InitializeComponent();
         }
@@ -92,6 +98,7 @@ namespace TinkeringAudio {
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
         }
+        #endregion
 
         #region GENERATE FUNCTIONS
 
@@ -403,6 +410,7 @@ namespace TinkeringAudio {
 
         #region MELODY BUTTONS
 
+        #region AudioSplicing
         private List<int> AudioSplicing (List<int> audSamp1, List<int> audSamp2)
         {
             // declare list
@@ -422,8 +430,10 @@ namespace TinkeringAudio {
 
             return SplicedList;
 
-        }   
+        }
+        #endregion
 
+        #region AddingEchos
         private List<int> AddingEchos (List<int> inputList, int seconds)
         {
             // required: 
@@ -458,17 +468,19 @@ namespace TinkeringAudio {
             return EchoList;
 
         }
+        #endregion
 
+        #region Normalisation
         private List<int> Normalisation (List<int> audSamp)
         {
-            int NormalisationList = 0;
+            int NormalisationInt = 0;
 
             for (int i = 0; i < audSamp.Count; i++)
             {
-                NormalisationList = Math.Max(NormalisationList, (audSamp[i]));
+                NormalisationInt = Math.Max(NormalisationInt, (audSamp[i]));
             }
 
-            int o = NormalisationList / 32767;
+            int o = NormalisationInt / 32767;
 
             for (int i = 0; i < (audSamp.Count); i++)
             {
@@ -479,17 +491,62 @@ namespace TinkeringAudio {
 
             return audSamp;
         }
+        #endregion
 
-        private double Resample (double audSamp, int audScale)
+        #region Resample
+        private List<double> Resample (List<double> audSamp, double audScale)
         {
+            double modAudScale = 1.0 / audScale;
 
-            return 0.0;
+            List<double> resampledList = new List<double>();
+
+            if (modAudScale > 1)
+            {
+                for (int i = 0; i < (audSamp.Count); i++)
+                {
+                    double value = 0;
+
+                    for (int j = 0; j < modAudScale; j++)
+                    {
+                        value = audSamp[i + j];
+                    }
+                    value = value / modAudScale;
+
+                    resampledList.Add(value);
+                }
+            }
+
+            else
+            {
+                int k = 0;
+                double l = 0.0;
+                double m = audScale / 1.0;
+
+                do
+                {
+                    resampledList.Add(audSamp[k]);
+                    l = l + m;
+                    k = Convert.ToInt32(l); 
+
+                } while (k < (audSamp.Count));
+            }
+
+            return resampledList;
         }
+        #endregion
 
-        private double ScalingAmplitude (double audSamp, double volFactor)
+
+        private List<int> ScalingAmplitude(List<int> audSamp, int ampFactor)
         {
+            List<int> ScaledList = new List<int>();
 
-            return 0.0;
+            for (int i = 0; i < (audSamp.Count); i++)
+            {
+                int v = audSamp[i] * ampFactor;
+                v = Math.Max((Math.Max(v)), v);
+            }
+
+            return ScaledList;
         }
 
         private double ToneCombine (double duration, double freq, double w)
