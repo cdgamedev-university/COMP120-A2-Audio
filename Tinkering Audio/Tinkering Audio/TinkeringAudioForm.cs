@@ -39,6 +39,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -94,6 +95,62 @@ namespace TinkeringAudio {
 
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
+        }
+        #endregion
+
+        #region SAVING AND LOADING FILES
+        void LoadAudioClip() {
+            // create a new file dialog (pop up window to browse windows explorer)
+            OpenFileDialog openFileDialog = new OpenFileDialog {
+                // set the initial directory to be the C drive
+                InitialDirectory = "C:\\",
+                // add some filters to the dialog
+                Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
+                + "All files (*.*)|*.*",                                                                                                              // all files
+                FilterIndex = 1,                // start the filter index at 1 (supported files)
+                RestoreDirectory = true,        // enable restoring directory when the dialog is closed
+                Title = "Load an audio file..." // change the title to something more fitting
+            };
+
+            // open the file dialog, if the OK button is pressed
+            if (openFileDialog.ShowDialog() == DialogResult.OK) {
+                Stopwatch s = Stopwatch.StartNew();
+
+                // try to run the following
+                try {
+                    // set the path to the file name
+                    string path = openFileDialog.FileName;
+
+                    // create a new file reader for the file
+                    WaveFileReader audioFileReader = new WaveFileReader(path);
+                    // create a new wave out
+                    waveOut = new WaveOut();
+                    // intialize the wave out using the audio file reader
+                    waveOut.Init(audioFileReader);
+                    // play the wave out
+                    waveOut.Play();
+                }
+                // if there is a format exception
+                catch (FormatException) {
+                    // set the message of the message box
+                    string message = "This file doesn't appear to be a supported audio format. Please choose a different file.";
+                    // set the caption of the message box
+                    string caption = "Audio Import Error";
+
+                    // set the message box to have only the ok button shown
+                    MessageBoxButtons buttons = MessageBoxButtons.OK;
+
+                    // show the message box with the above details
+                    MessageBox.Show(message, caption, buttons);
+
+                    // restart the function
+                    LoadAudioClip();
+                }
+            }
+        }
+
+        void SaveAudioClip() {
+
         }
         #endregion
 
@@ -658,5 +715,9 @@ namespace TinkeringAudio {
         }
 
         #endregion
+
+        private void btn_LoadAudioFile_Click(object sender, EventArgs e) {
+            LoadAudioClip();
+        }
     }
 }
