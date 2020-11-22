@@ -77,10 +77,6 @@ namespace TinkeringAudio {
         #endregion
 
         // initialise the form
-<<<<<<< HEAD
-=======
-
->>>>>>> 4a90bf335d217b1ce0b8c3b84403da5d09bf2107
         #region FORM INITIALISATION AND LOADS
 
         // initialise form
@@ -567,14 +563,10 @@ namespace TinkeringAudio {
             for (int i = 0; i < (audSamp.Count); i++)
             {
                 int v = audSamp[i] * ampFactor;
-<<<<<<< HEAD
-                //v = Math.Max((Math.Max(v)), v);
-=======
                 // v = Math.Max((Math.Max(v)), v);
                 // v = Math.Min((Math.Min(v)), v);
 
                 ScaledList.Add(v);
->>>>>>> 4a90bf335d217b1ce0b8c3b84403da5d09bf2107
             }
 
             return ScaledList;
