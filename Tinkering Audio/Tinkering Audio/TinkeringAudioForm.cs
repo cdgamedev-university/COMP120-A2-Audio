@@ -57,6 +57,7 @@ namespace TinkeringAudio {
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second - 44100 because thats how many samples per sec humans can hear
         private readonly int SAMPLE_RATE = 44100;
+
         // 2 to power of 15 is 32768 - the maximum value we want
         private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
 
@@ -76,10 +77,8 @@ namespace TinkeringAudio {
         private double[] noteDuration;
         #endregion
 
-        // initialise the form
         #region FORM INITIALISATION AND LOADS
-
-        // initialise form
+        // initialise the form
         public TinkeringAudioForm() {
             InitializeComponent();
         }
@@ -602,59 +601,97 @@ namespace TinkeringAudio {
         }
         #endregion
 
+        // ERROR in scaling amplitude to fix
         #region Scaling Amplitude
+        /// <summary>
+        /// this function will scale the amplitude of a audio sample to either make it louder or quieter
+        /// </summary>
+        /// <param name="audSample"></param>
+        /// <param name="ampFactor"></param>
+        /// <returns>returns a newly scaled list</returns>
         private List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
         {
+            // delcares a new list to hold the scaled audio
             List<int> ScaledList = new List<int>();
 
+            // while the statement i is less than the length of audio sample then execute loop
             for (int i = 0; i < (audSample.Count); i++)
             {
+                //declares variable v as audio sample instance i multiplied by the amplitude factor
                 int v = audSample[i] * ampFactor;
+
                 // v = Math.Max((Math.Max(v)), v);
+
                 // v = Math.Min((Math.Min(v)), v);
 
+                // adds v to the scaled list
                 ScaledList.Add(v);
             }
 
+            // returns the modified audio through returning the scaled list
             return ScaledList;
         }
         #endregion
 
         #region Tone Combine
+        /// <summary>
+        /// this function takes two tones and combines them so they play at the same time
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="factorFreq"></param>
+        /// <param name="w"></param>
+        /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
         private List<double> ToneCombine(double duration, List<double> factorFreq, double w)
         {
             // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
             // d is the duration 
             // w is ???
 
+            // declaring new list for the two tones to combine in
             List<double> CombinedList = new List<double>();
 
+            // while the statement i is less than duration multiplied by the sample rate is true execute loop
             for (int i = 0; i < (duration * SAMPLE_RATE); i++)
             {
-                int v = 0;
+                // declares the v variable
+                int value = 0;
                 
+                // while the statement i is less than the length of factor freq is true exectute loop
                 for (int j = 0; i < (factorFreq.Count); j++)
                 {
-                    v = v + Convert.ToInt32(waveFunction(factorFreq[j], i));
+                    // wavefunction factorfreq[j] and i is added to value
+                    value += Convert.ToInt32(waveFunction(factorFreq[j], i));
                 }
-                CombinedList.Add(v);
+                // adds value into the combined tone list
+                CombinedList.Add(value);
             }
-
+            // returns the modifed combined list
             return CombinedList;
         }
         #endregion
 
         #region White Noise
+        /// <summary>
+        /// this function creates white noise, does not require audio sample to edit
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="resultantVol"></param>
+        /// <returns>returns the white list list</returns>
         private List<double> WhiteNoise (double time, double resultantVol)
         {
+            // declaring new list for the two tones to combine in 
             List<double> WhiteList = new List<double>();
 
+            // while the statement i is less than time multiplied by the sample rate is true execute loop
             for (int i = 0; i < (time * SAMPLE_RATE); i++)
             {
-                Random rd = new Random();
-                WhiteList.Add(rd.Next(-1, 1));
-            }
+                //create a random variable which generates new random each for loop
+                Random rand = new Random();
 
+                // adds a random number between -1 and 1 to the white list
+                WhiteList.Add(rand.Next(-1, 1));
+            }
+            // returns modifed white list to 
             return WhiteList;
         }
         #endregion
