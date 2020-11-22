@@ -524,55 +524,82 @@ namespace TinkeringAudio {
         #endregion
 
         #region Resample
-        private List<double> Resample (List<double> audSamp, double audScale)
+        /// <summary>
+        /// a function to resample a audio sample using a factor, audScale, to scale the audio.
+        /// </summary>
+        /// <param name="audSamp"></param>
+        /// <param name="audScale"></param>
+        /// <returns>the resampled list</returns>
+        private List<double> Resample (List<double> audSample, double audScale)
         {
+            // the modified audioscale 
             double modAudScale = 1.0 / audScale;
 
+            //declares list for the resampled sound
             List<double> resampledList = new List<double>();
 
+            // if modified audio scale is greater than 1 then
             if (modAudScale > 1)
             {
-                for (int i = 0; i < (audSamp.Count); i++)
+                // while the statement i is less than the length of audSample is true execute loop
+                for (int i = 0; i < (audSample.Count); i++)
                 {
+                    // declare double value var
                     double value = 0;
 
+                    // while the statement j is less than modified audio scale is true execute loop
                     for (int j = 0; j < modAudScale; j++)
                     {
-                        value = audSamp[i + j];
+                        // audio sample i+j incriment is added to value
+                        value += audSample[i + j];
                     }
+                    // value is divided by the modified audio scale
                     value = value / modAudScale;
 
+                    // adds value onto the resampled list
                     resampledList.Add(value);
                 }
             }
-
+            
+            // if modified audio scale is less than 1 then
             else
             {
-                int k = 0;
-                double l = 0.0;
-                double m = audScale / 1.0;
+                // declaring the index var
+                int index = 0;
 
+                // declaring the l var
+                double l = 0.0;
+
+                // declaring m as 1 divided by the audio scale
+                double m = 1.0 / audScale;
+
+                // while the statement index is less than the length of audiosample do this
                 do
                 {
-                    resampledList.Add(audSamp[k]);
+                    // add audio sample[index] to the resampled list
+                    resampledList.Add(audSample[index]);
+
+                    // m is added into l
                     l = l + m;
-                    k = Convert.ToInt32(l); 
 
-                } while (k < (audSamp.Count));
+                    // index is now declared as l
+                    index = Convert.ToInt32(l); 
+
+                } while (index < (audSample.Count));
             }
-
+            // return the resampled list
             return resampledList;
         }
         #endregion
 
         #region Scaling Amplitude
-        private List<int> ScalingAmplitude(List<int> audSamp, int ampFactor)
+        private List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
         {
             List<int> ScaledList = new List<int>();
 
-            for (int i = 0; i < (audSamp.Count); i++)
+            for (int i = 0; i < (audSample.Count); i++)
             {
-                int v = audSamp[i] * ampFactor;
+                int v = audSample[i] * ampFactor;
                 // v = Math.Max((Math.Max(v)), v);
                 // v = Math.Min((Math.Min(v)), v);
 
