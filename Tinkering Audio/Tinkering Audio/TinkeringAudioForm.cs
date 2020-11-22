@@ -1,5 +1,43 @@
-﻿/// Authors: Daisy Baker & Hayley Davies © 2020
-/// License: 
+﻿//***************************************************************************\\
+//           ██████  ██████  ███    ███ ██████    ██ ██████   ██████         \\
+//          ██      ██    ██ ████  ████ ██   ██  ███      ██ ██  ████        \\
+//          ██      ██    ██ ██ ████ ██ ██████    ██  █████  ██ ██ ██        \\
+//          ██      ██    ██ ██  ██  ██ ██        ██ ██      ████  ██        \\
+//           ██████  ██████  ██      ██ ██        ██ ███████  ██████         \\
+//                                                                           \\
+//    ████████ ██ ███    ██ ██   ██ ███████ ██████  ██ ███    ██  ██████     \\
+//       ██    ██ ████   ██ ██  ██  ██      ██   ██ ██ ████   ██ ██          \\
+//       ██    ██ ██ ██  ██ █████   █████   ██████  ██ ██ ██  ██ ██   ███    \\
+//       ██    ██ ██  ██ ██ ██  ██  ██      ██   ██ ██ ██  ██ ██ ██    ██    \\
+//       ██    ██ ██   ████ ██   ██ ███████ ██   ██ ██ ██   ████  ██████     \\
+//                                                                           \\
+//                     █████  ██    ██ ███████  ██  ██████                   \\
+//                    ██   ██ ██    ██ ██    ██ ██ ██    ██                  \\
+//                    ███████ ██    ██ ██    ██ ██ ██    ██                  \\
+//                    ██   ██ ██    ██ ██    ██ ██ ██    ██                  \\
+//                    ██   ██  ██████  ███████  ██  ██████                   \\
+//***************************************************************************\\
+#region Copyright & License Information
+//***************************************************************************\\
+// Copyright 2020 Daisy Baker and Hayley Davies                              \\
+// Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk               \\
+//                                                                           \\
+// Any sample audio distributed with this project is Copyright of Otis Hull  \\
+// Contact: oh249978@falmouth.ac.uk                                          \\
+//                                                                           \\
+// Licensed under <FILL IN LICENSE> (the "License")                          \\
+// you may not use this file except in compliance with the License           \\
+// You may obtain a copy of the License at:                                  \\
+// <URL TO LICENSE>                                                          \\
+//                                                                           \\
+// Unless required by applicable law or agreed to in writing, software       \\
+// distributed under the License is distributed on an "AS IS" BASIS,         \\
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  \\
+// See the License for the specific language governing permissions and       \\
+// limitations under the License.                                            \\
+//***************************************************************************\\
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,25 +60,29 @@ namespace TinkeringAudio {
         // 2 to power of 15 is 32768 - the maximum value we want
         private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
 
-        // double var to hold volume lvl
+        // double var to hold volume level
         private double volume = 0.08;
 
         // allows ability to treat function like variable
         private delegate double WaveFunction(double frequency, int position);
         private WaveFunction waveFunction = null;
 
-        // 
+        // variables to store the wave information
         private WaveOut waveOut = null;
         private IWaveProvider waveProvider = null;
 
-        // 
+        // variables to store the note information
         private List<double> notes;
         private double[] noteDuration;
         #endregion
 
+<<<<<<< HEAD
+        // initialise the form
+=======
         #region FORM INITIALISATION AND LOADS
 
         // initialise form
+>>>>>>> 682de8432e4a4abec098a902ef273ec90a5bc694
         public TinkeringAudioForm() {
             InitializeComponent();
         }
@@ -339,6 +381,7 @@ namespace TinkeringAudio {
         #endregion
 
         #region BUTTON FUNCTIONS
+        // button for the 
         private void btn_GenerateMelody_Click(object sender, EventArgs e) 
         {
             waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), SAMPLE_RATE, 1);
