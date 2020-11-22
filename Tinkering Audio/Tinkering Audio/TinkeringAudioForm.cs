@@ -641,7 +641,7 @@ namespace TinkeringAudio {
         /// <param name="factorFreq"></param>
         /// <param name="w"></param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
-        private List<double> ToneCombine(double duration, List<double> factorFreq, double w)
+        private List<double> ToneCombine(double duration, List<double> Frequency, double w)
         {
             // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
             // d is the duration 
@@ -657,10 +657,10 @@ namespace TinkeringAudio {
                 int value = 0;
                 
                 // while the statement i is less than the length of factor freq is true exectute loop
-                for (int j = 0; i < (factorFreq.Count); j++)
+                for (int j = 0; i < (Frequency.Count); j++)
                 {
                     // wavefunction factorfreq[j] and i is added to value
-                    value += Convert.ToInt32(waveFunction(factorFreq[j], i));
+                    value += Convert.ToInt32(waveFunction(Frequency[j], i));
                 }
                 // adds value into the combined tone list
                 CombinedList.Add(value);
