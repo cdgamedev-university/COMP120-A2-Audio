@@ -501,16 +501,21 @@ namespace TinkeringAudio {
             {
                 int v = audSamp[i] * ampFactor;
                 v = Math.Max((Math.Max(v)), v);
+                v = Math.Min((Math.Min(v)), v);
+
+                ScaledList.Add(v);
             }
 
             return ScaledList;
         }
+
 
         private double ToneCombine (double duration, double freq, double w)
         {
 
             return 0.0;
         }
+
 
         private double WhiteNoise (double t, double resultantVol)
         {
