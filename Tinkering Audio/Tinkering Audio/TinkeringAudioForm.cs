@@ -437,8 +437,8 @@ namespace TinkeringAudio {
         /// <summary>
         /// function to generate a list of ints which splices two audio segments together
         /// </summary>
-        /// <param name="audSamp1">the first audio sample</param>
-        /// <param name="audSamp2">the second audio sample</param>
+        /// <param name="audioSample0">the first audio sample</param>
+        /// <param name="audioSample1">the second audio sample</param>
         /// <returns>the two spliced audio samples</returns>
         private List<int> AudioSplicing (List<int> audioSample0, List<int> audioSample1)
         {
@@ -454,7 +454,13 @@ namespace TinkeringAudio {
         #endregion
 
         #region AddingEchos
-        private List<int> AddingEchos (List<int> inputList, int seconds)
+        /// <summary>
+        /// function to add echos
+        /// </summary>
+        /// <param name="inputList">the sample to add an echo to</param>
+        /// <param name="delayInSeconds">the offfset of the echo</param>
+        /// <returns>return the sample with its added echo</returns>
+        private List<int> AddingEchos (List<int> inputList, int delayInSeconds)
         {
             // required: 
             // 1 =< t
@@ -463,12 +469,16 @@ namespace TinkeringAudio {
             // there is an input list s, where the input is extended by t seconds
             // combines input list with delayed copy of itself
 
-            List<int> EchoList = new List<int>();
+            // create a new list for the echo
+            List<int> echoList = new List<int>();
 
-            int sampleDuration = seconds * SAMPLE_RATE;
+            // the duration of the echo added to the end
+            int echoDuration = delayInSeconds * SAMPLE_RATE;
 
-            for (int i = 0; i < (inputList.Count) + sampleDuration; i++)
+            // run through the input and add the echo to the end
+            for (int i = 0; i < (inputList.Count) + echoDuration; i++)
             {
+                // set the value to 0
                 int value = 0;
 
                 if (i < inputList.Count)
@@ -476,16 +486,16 @@ namespace TinkeringAudio {
                     value = value + inputList[i];
                 }
 
-                if (i - sampleDuration > 0)
+                if (i - echoDuration > 0)
                 {
-                    value= value+ inputList[i - sampleDuration];
+                    value = value + inputList[i - echoDuration];
                     
                 }
 
-                EchoList.Add(value);
+                echoList.Add(value);
             }
 
-            return EchoList;
+            return echoList;
 
         }
         #endregion
