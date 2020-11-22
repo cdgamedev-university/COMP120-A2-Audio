@@ -481,45 +481,55 @@ namespace TinkeringAudio {
                 // set the value to 0
                 int value = 0;
 
+                // if the current sample is less than the input sample length
                 if (i < inputList.Count)
                 {
-                    value = value + inputList[i];
+                    // add the input list at index to the value
+                    value += inputList[i];
                 }
 
+                // if the echo should be playing
                 if (i - echoDuration > 0)
                 {
-                    value = value + inputList[i - echoDuration];
-                    
+                    // add the input list at index - echo duration to the value
+                    value += inputList[i - echoDuration];
                 }
 
+                // add the value to the echo list
                 echoList.Add(value);
             }
 
+            // return the echo list
             return echoList;
-
         }
         #endregion
 
         #region Normalisation
-        private List<int> Normalisation (List<int> audSamp)
+        /// <summary>
+        /// this function will normalize the sound which would try to make the volume of the sound even throughout the audio clip
+        /// </summary>
+        /// <param name="sample">the audio sample to be normalized</param>
+        /// <returns>the normalized sound clip</returns>
+        private List<int> Normalisation (List<int> sample)
         {
-            int NormalisationInt = 0;
+            // declare and set the maximum volume of the sample
+            int maxAmplitudeOfSample = sample.Max();
 
-            for (int i = 0; i < audSamp.Count; i++)
+            // declare and set the ratio of the amplitude compared the the max aplitude
+            int amplitudeRatio = (MAX_VALUE - 1) / maxAmplitudeOfSample;
+
+            // run through the values of the sample
+            for (int i = 0; i < (sample.Count); i++)
             {
-                NormalisationInt = Math.Max(NormalisationInt, (audSamp[i]));
+                // declare and set the normalized sample value
+                int normalizedValue = amplitudeRatio * sample[i];
+
+                // set the sample at the i position to the normalized sample value
+                sample[i] = normalizedValue;
             }
 
-            int o = NormalisationInt / 32767;
-
-            for (int i = 0; i < (audSamp.Count); i++)
-            {
-                int p = 0;
-                p = o * audSamp[i];
-                audSamp[i] = p;
-            }
-
-            return audSamp;
+            // return the sample
+            return sample;
         }
         #endregion
 
