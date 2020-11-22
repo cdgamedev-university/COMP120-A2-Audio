@@ -58,6 +58,7 @@ namespace TinkeringAudio {
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second - 44100 because thats how many samples per sec humans can hear
         private readonly int SAMPLE_RATE = 44100;
+
         // 2 to power of 15 is 32768 - the maximum value we want
         private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
 
@@ -77,10 +78,8 @@ namespace TinkeringAudio {
         private double[] noteDuration;
         #endregion
 
-        // initialise the form
         #region FORM INITIALISATION AND LOADS
-
-        // initialise form
+        // initialise the form
         public TinkeringAudioForm() {
             InitializeComponent();
         }
@@ -591,100 +590,165 @@ namespace TinkeringAudio {
         #endregion
 
         #region Resample
-        private List<double> Resample (List<double> audSamp, double audScale)
+        /// <summary>
+        /// a function to resample a audio sample using a factor, audScale, to scale the audio.
+        /// </summary>
+        /// <param name="audSamp"></param>
+        /// <param name="audScale"></param>
+        /// <returns>the resampled list</returns>
+        private List<double> Resample (List<double> audSample, double audScale)
         {
+            // the modified audioscale 
             double modAudScale = 1.0 / audScale;
 
+            //declares list for the resampled sound
             List<double> resampledList = new List<double>();
 
+            // if modified audio scale is greater than 1 then
             if (modAudScale > 1)
             {
-                for (int i = 0; i < (audSamp.Count); i++)
+                // while the statement i is less than the length of audSample is true execute loop
+                for (int i = 0; i < (audSample.Count); i++)
                 {
+                    // declare double value var
                     double value = 0;
 
+                    // while the statement j is less than modified audio scale is true execute loop
                     for (int j = 0; j < modAudScale; j++)
                     {
-                        value = audSamp[i + j];
+                        // audio sample i+j incriment is added to value
+                        value += audSample[i + j];
                     }
+                    // value is divided by the modified audio scale
                     value = value / modAudScale;
 
+                    // adds value onto the resampled list
                     resampledList.Add(value);
                 }
             }
-
+            
+            // if modified audio scale is less than 1 then
             else
             {
-                int k = 0;
-                double l = 0.0;
-                double m = audScale / 1.0;
+                // declaring the index var
+                int index = 0;
 
+                // declaring the l var
+                double l = 0.0;
+
+                // declaring m as 1 divided by the audio scale
+                double m = 1.0 / audScale;
+
+                // while the statement index is less than the length of audiosample do this
                 do
                 {
-                    resampledList.Add(audSamp[k]);
+                    // add audio sample[index] to the resampled list
+                    resampledList.Add(audSample[index]);
+
+                    // m is added into l
                     l = l + m;
-                    k = Convert.ToInt32(l); 
 
-                } while (k < (audSamp.Count));
+                    // index is now declared as l
+                    index = Convert.ToInt32(l); 
+
+                } while (index < (audSample.Count));
             }
-
+            // return the resampled list
             return resampledList;
         }
         #endregion
 
+        // ERROR in scaling amplitude to fix
         #region Scaling Amplitude
-        private List<int> ScalingAmplitude(List<int> audSamp, int ampFactor)
+        /// <summary>
+        /// this function will scale the amplitude of a audio sample to either make it louder or quieter
+        /// </summary>
+        /// <param name="audSample"></param>
+        /// <param name="ampFactor"></param>
+        /// <returns>returns a newly scaled list</returns>
+        private List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
         {
+            // delcares a new list to hold the scaled audio
             List<int> ScaledList = new List<int>();
 
-            for (int i = 0; i < (audSamp.Count); i++)
+            // while the statement i is less than the length of audio sample then execute loop
+            for (int i = 0; i < (audSample.Count); i++)
             {
-                int v = audSamp[i] * ampFactor;
+                //declares variable v as audio sample instance i multiplied by the amplitude factor
+                int v = audSample[i] * ampFactor;
+
                 // v = Math.Max((Math.Max(v)), v);
+
                 // v = Math.Min((Math.Min(v)), v);
 
+                // adds v to the scaled list
                 ScaledList.Add(v);
             }
 
+            // returns the modified audio through returning the scaled list
             return ScaledList;
         }
         #endregion
 
         #region Tone Combine
-        private List<double> ToneCombine(double duration, List<double> factorFreq, double w)
+        /// <summary>
+        /// this function takes two tones and combines them so they play at the same time
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="factorFreq"></param>
+        /// <param name="w"></param>
+        /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
+        private List<double> ToneCombine(double duration, List<double> Frequency, double w)
         {
             // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
             // d is the duration 
             // w is ???
 
+            // declaring new list for the two tones to combine in
             List<double> CombinedList = new List<double>();
 
+            // while the statement i is less than duration multiplied by the sample rate is true execute loop
             for (int i = 0; i < (duration * SAMPLE_RATE); i++)
             {
-                int v = 0;
+                // declares the v variable
+                int value = 0;
                 
-                for (int j = 0; i < (factorFreq.Count); j++)
+                // while the statement i is less than the length of factor freq is true exectute loop
+                for (int j = 0; i < (Frequency.Count); j++)
                 {
-                    v = v + Convert.ToInt32(waveFunction(factorFreq[j], i));
+                    // wavefunction factorfreq[j] and i is added to value
+                    value += Convert.ToInt32(waveFunction(Frequency[j], i));
                 }
-                CombinedList.Add(v);
+                // adds value into the combined tone list
+                CombinedList.Add(value);
             }
-
+            // returns the modifed combined list
             return CombinedList;
         }
         #endregion
 
         #region White Noise
+        /// <summary>
+        /// this function creates white noise, does not require audio sample to edit
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="resultantVol"></param>
+        /// <returns>returns the white list list</returns>
         private List<double> WhiteNoise (double time, double resultantVol)
         {
+            // declaring new list for the two tones to combine in 
             List<double> WhiteList = new List<double>();
 
+            // while the statement i is less than time multiplied by the sample rate is true execute loop
             for (int i = 0; i < (time * SAMPLE_RATE); i++)
             {
-                Random rd = new Random();
-                WhiteList.Add(rd.Next(-1, 1));
-            }
+                //create a random variable which generates new random each for loop
+                Random rand = new Random();
 
+                // adds a random number between -1 and 1 to the white list
+                WhiteList.Add(rand.Next(-1, 1));
+            }
+            // returns modifed white list to 
             return WhiteList;
         }
         #endregion
