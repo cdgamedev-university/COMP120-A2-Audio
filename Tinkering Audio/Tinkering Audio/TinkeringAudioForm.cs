@@ -77,6 +77,10 @@ namespace TinkeringAudio {
         #endregion
 
         // initialise the form
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4a90bf335d217b1ce0b8c3b84403da5d09bf2107
         #region FORM INITIALISATION AND LOADS
 
         // initialise form
@@ -231,6 +235,7 @@ namespace TinkeringAudio {
             return enumerable.ElementAt(index);
         }
 
+
         /// <summary>
         /// create a list of notes
         /// </summary>
@@ -257,6 +262,7 @@ namespace TinkeringAudio {
             // return the newly generated notes
             return notes;
         }
+
 
         /// <summary>
         /// converts a waveform as int to a waveform
@@ -553,7 +559,7 @@ namespace TinkeringAudio {
         }
         #endregion
 
-
+        #region Scaling Amplitude
         private List<int> ScalingAmplitude(List<int> audSamp, int ampFactor)
         {
             List<int> ScaledList = new List<int>();
@@ -561,23 +567,58 @@ namespace TinkeringAudio {
             for (int i = 0; i < (audSamp.Count); i++)
             {
                 int v = audSamp[i] * ampFactor;
+<<<<<<< HEAD
                 //v = Math.Max((Math.Max(v)), v);
+=======
+                // v = Math.Max((Math.Max(v)), v);
+                // v = Math.Min((Math.Min(v)), v);
+
+                ScaledList.Add(v);
+>>>>>>> 4a90bf335d217b1ce0b8c3b84403da5d09bf2107
             }
 
             return ScaledList;
         }
+        #endregion
 
-        private double ToneCombine (double duration, double freq, double w)
+        #region Tone Combine
+        private List<double> ToneCombine(double duration, List<double> factorFreq, double w)
         {
+            // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
+            // d is the duration 
+            // w is ???
 
-            return 0.0;
+            List<double> CombinedList = new List<double>();
+
+            for (int i = 0; i < (duration * SAMPLE_RATE); i++)
+            {
+                int v = 0;
+                
+                for (int j = 0; i < (factorFreq.Count); j++)
+                {
+                    v = v + Convert.ToInt32(waveFunction(factorFreq[j], i));
+                }
+                CombinedList.Add(v);
+            }
+
+            return CombinedList;
         }
+        #endregion
 
-        private double WhiteNoise (double t, double resultantVol)
+        #region White Noise
+        private List<double> WhiteNoise (double time, double resultantVol)
         {
+            List<double> WhiteList = new List<double>();
 
-            return 0.0;
+            for (int i = 0; i < (time * SAMPLE_RATE); i++)
+            {
+                Random rd = new Random();
+                WhiteList.Add(rd.Next(-1, 1));
+            }
+
+            return WhiteList;
         }
+        #endregion
 
         // must create 4 new melodies using waves to create ambient music for 
 
