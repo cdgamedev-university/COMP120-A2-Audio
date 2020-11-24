@@ -121,11 +121,24 @@ namespace TinkeringAudio {
                     string path = openFileDialog.FileName;
 
                     // create a new file reader for the file
-                    WaveFileReader audioFileReader = new WaveFileReader(path);
+                    WaveFileReader waveFileReader = new WaveFileReader(path);
+
+                    // generate a wave prodivder from the file
+                    IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
+
+                    // create a buffer to store the bytes
+                    byte[] buffer = new byte[waveFileReader.Length];
+
+                    // read the bytes from the file and log how many bytes were read
+                    Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
+                    
+                    // create a new wave provider using the bytes read
+                    IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(SAMPLE_RATE, 16, 1));
+
                     // create a new wave out
                     waveOut = new WaveOut();
                     // intialize the wave out using the audio file reader
-                    waveOut.Init(audioFileReader);
+                    waveOut.Init(newWaveProvider);
                     // play the wave out
                     waveOut.Play();
                 }
@@ -142,7 +155,7 @@ namespace TinkeringAudio {
                     // show the message box with the above details
                     MessageBox.Show(message, caption, buttons);
 
-                    // restart the function
+                    // call the function again
                     LoadAudioClip();
                 }
             }
@@ -354,6 +367,20 @@ namespace TinkeringAudio {
             // return the wave provider
             return waveProvider;
         }
+
+        /// <summary>
+        /// converts a byte list to an int list
+        /// </summary>
+        /// <param name="waveByte">the byte list of the wave</param>
+        /// <param name="sampleRate">the sample rate of the wave</param>
+        /// <param name="channelCount">the number of channels that the track has</param>
+        /// <returns></returns>
+        private List<int> ConvertToListInt(byte[] waveByte, int sampleRate, int channelCount) {
+            List<int> wave = new List<int>();
+
+            return wave;
+        }
+        
         #endregion
 
         #region WAVE TYPES
@@ -451,6 +478,8 @@ namespace TinkeringAudio {
 
             // sve the wave to a file
             WaveFileWriter.CreateWaveFile(filename, waveProvider);
+
+            Console.WriteLine(filename);
         }
 
         /// <summary>
@@ -719,7 +748,7 @@ namespace TinkeringAudio {
         // must create 4 new melodies using waves to create ambient music for 
 
         private void Villagebtn_Click(object sender, EventArgs e) {
-            GenerateSilence(1);
+
         }
 
         private void Forestbtn_Click(object sender, EventArgs e) {
