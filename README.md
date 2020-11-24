@@ -1,17 +1,18 @@
 #COMP120 Tinkering Audio
+#Contract 2 - Ambient Platformers Audio Generation (Diegetic Audio)
 
-Please fork this repository for your COMP120 Tinkering Audio project!
+Our contract requires us to generate ambient audio tracks so that a player feels as though they're in 
+differentareas of the game's setting. Hayley Davies and myself have implimented 7 algorithms which 
+will be used to meet the criteria on this contract.
 
-You are expected to work in a pair with ONE partner together on ONE contract. Work together in this repo! There should only be ONE fork in which you both collaborate!
+This is a form program loads audio files from the user, and then manipulates the sound files use the algorithms.
 
-Reminder - please *do not* push third-party copyright content into version control! Please only push your own work. You can use third-party work only when it is licensed to members of the public and you ahere to the conditions of that license and you provide sufficient clarity/attribution to this effect in this README.
+Instructions:
+1. Open visual studio and load the form file
+2. Press start on visual studio and run the form.
+3. Press Load File and choose a file to load
 
-It is your responsibility to update the .gitignore based on your requirements.
+*** Currently the program is still a work in progress,  ***
+*** we suggest you look into the code to judge progress *** 
+*** and the form itself					***
 
-Please see the assignment brief and the list of contracts on LearningSpace for details of your assignment.
-
-The deadline for this assignment is on MyFalmouth.
-
-It is considered best practice to submit the link to this repo to the LearningSpace at the start of the assignment! Get it done now!
-
-You are working in C# for this assignment.
