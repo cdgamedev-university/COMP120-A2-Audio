@@ -39,10 +39,10 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -53,14 +53,13 @@ using NAudio;
 using NAudio.Wave;
 
 namespace TinkeringAudio {
-    public partial class TinkeringAudioForm : Form 
-    {
+    public partial class TinkeringAudioForm : Form {
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second - 44100 because thats how many samples per sec humans can hear
         private readonly int SAMPLE_RATE = 44100;
 
         // 2 to power of 15 is 32768 - the maximum value we want
-        private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
+        private readonly int MAX_VALUE = (int) Math.Pow(2, 15);
 
         // double var to hold volume level
         private double volume = 0.08;
@@ -103,12 +102,13 @@ namespace TinkeringAudio {
             OpenFileDialog openFileDialog = new OpenFileDialog {
                 // set the initial directory to be the C drive
                 InitialDirectory = "C:\\",
-                // add some filters to the dialog
-                Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
-                + "All files (*.*)|*.*",                                                                                                              // all files
-                FilterIndex = 1,                // start the filter index at 1 (supported files)
-                RestoreDirectory = true,        // enable restoring directory when the dialog is closed
-                Title = "Load an audio file..." // change the title to something more fitting
+                    // add some filters to the dialog
+                    Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
+                    +
+                    "All files (*.*)|*.*", // all files
+                    FilterIndex = 1, // start the filter index at 1 (supported files)
+                    RestoreDirectory = true, // enable restoring directory when the dialog is closed
+                    Title = "Load an audio file..." // change the title to something more fitting
             };
 
             // open the file dialog, if the OK button is pressed
@@ -121,11 +121,24 @@ namespace TinkeringAudio {
                     string path = openFileDialog.FileName;
 
                     // create a new file reader for the file
-                    WaveFileReader audioFileReader = new WaveFileReader(path);
+                    WaveFileReader waveFileReader = new WaveFileReader(path);
+
+                    // generate a wave prodivder from the file
+                    IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
+
+                    // create a buffer to store the bytes
+                    byte[] buffer = new byte[waveFileReader.Length];
+
+                    // read the bytes from the file and log how many bytes were read
+                    Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
+                    
+                    // create a new wave provider using the bytes read
+                    IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(SAMPLE_RATE, 16, 1));
+
                     // create a new wave out
                     waveOut = new WaveOut();
                     // intialize the wave out using the audio file reader
-                    waveOut.Init(audioFileReader);
+                    waveOut.Init(newWaveProvider);
                     // play the wave out
                     waveOut.Play();
                 }
@@ -142,7 +155,7 @@ namespace TinkeringAudio {
                     // show the message box with the above details
                     MessageBox.Show(message, caption, buttons);
 
-                    // restart the function
+                    // call the function again
                     LoadAudioClip();
                 }
             }
@@ -161,7 +174,7 @@ namespace TinkeringAudio {
         /// <returns>returns notes as a List of ints</returns>
         private List<int> GenerateSilence(double durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
 
             // declare the silence as a new List of ints
             List<int> silence = new List<int>();
@@ -184,7 +197,7 @@ namespace TinkeringAudio {
         /// <returns>returns a tone as a List of ints</returns>
         private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
 
             // delcare the tone as a new List<int>
             List<int> tone = new List<int>();
@@ -198,13 +211,12 @@ namespace TinkeringAudio {
                 value = 0;
 
                 // run through the the frequencies
-                for (int j = 0; j < frequencies.Length; j++) 
-                {
+                for (int j = 0; j < frequencies.Length; j++) {
                     // adjust the value of the tone
-                    value += (short)(MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
+                    value += (short) (MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
                 }
                 // add the value to the list of tone
-                tone.Add(BitConverter.GetBytes(value)[0]);
+                tone.Add(BitConverter.GetBytes(value) [0]);
             }
             // return the tone
             return tone;
@@ -234,7 +246,7 @@ namespace TinkeringAudio {
                 frequency = GetRandomElement(notes, prng);
 
                 // add the frequency with a random length to melody
-                melody.AddRange(GenerateTone(GetRandomElement(noteDuration, prng), this.waveFunction, new double[] {frequency}));
+                melody.AddRange(GenerateTone(GetRandomElement(noteDuration, prng), this.waveFunction, new double[] { frequency }));
             }
 
             // return the melody
@@ -248,7 +260,7 @@ namespace TinkeringAudio {
         /// <returns>the white noise</returns>
         private List<int> GenerateWhiteNoise(int durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
 
             // create a new random
             Random prng = new Random();
@@ -257,10 +269,9 @@ namespace TinkeringAudio {
             List<int> noise = new List<int>();
 
             // run through for the sample duration
-            for (int i = 0; i < sampleDuration; i++) 
-            {
+            for (int i = 0; i < sampleDuration; i++) {
                 // generate a random value
-                int value = (int)(prng.Next(-1, 1) * volume * MAX_VALUE);
+                int value = (int) (prng.Next(-1, 1) * volume * MAX_VALUE);
 
                 // add the value to the noise list
                 noise.Add(value);
@@ -280,13 +291,11 @@ namespace TinkeringAudio {
         /// <param name="enumerable">the list to choose from</param>
         /// <param name="prng">the pseudo random number generator</param>
         /// <returns></returns>
-        private static T GetRandomElement<T>(IEnumerable<T> enumerable, Random prng) 
-        {
+        private static T GetRandomElement<T>(IEnumerable<T> enumerable, Random prng) {
             // get a random index and return the value of that index
             int index = prng.Next(0, enumerable.Count());
             return enumerable.ElementAt(index);
         }
-
 
         /// <summary>
         /// create a list of notes
@@ -296,8 +305,7 @@ namespace TinkeringAudio {
         /// <param name="endNote">the end note</param>
         /// <param name="increment">how much the list should increment by</param>
         /// <returns>a List of doubles called notes</returns>
-        private List<double> PopulateNotes(double baseNote, int startNote, int endNote, int increment) 
-        {
+        private List<double> PopulateNotes(double baseNote, int startNote, int endNote, int increment) {
             // work out the estimator
             double ESTIMATOR = Math.Pow(2.0, (1.0 / 12.0));
 
@@ -305,8 +313,7 @@ namespace TinkeringAudio {
             List<double> notes = new List<double>();
 
             // run through the notes, increasing by increment each iteration
-            for (int i = startNote; i < endNote; i += increment) 
-            {
+            for (int i = startNote; i < endNote; i += increment) {
                 // add a new note
                 notes.Add(baseNote * Math.Pow(ESTIMATOR, i));
             }
@@ -314,7 +321,6 @@ namespace TinkeringAudio {
             // return the newly generated notes
             return notes;
         }
-
 
         /// <summary>
         /// converts a waveform as int to a waveform
@@ -329,34 +335,30 @@ namespace TinkeringAudio {
 
             // set the array index to 0
             int byteArrayIndex = 0;
-            
+
             // declare a value
             short value;
 
             // run through the sample
-            for (int i = 0; i < sample.Count; i++) 
-            {
+            for (int i = 0; i < sample.Count; i++) {
                 // if the sample value is greater than the max value
                 // set the value to the max value
-                if (sample[i] > MAX_VALUE) 
-                {
-                    value = (short)MAX_VALUE;
-                } 
+                if (sample[i] > MAX_VALUE) {
+                    value = (short) MAX_VALUE;
+                }
                 // else if the sample value is less than the minimum value
                 // set the value to the min value
-                else if (sample[i] < -MAX_VALUE) 
-                {
-                    value = (short)-MAX_VALUE;
-                } 
+                else if (sample[i] < -MAX_VALUE) {
+                    value = (short) - MAX_VALUE;
+                }
                 // otherwise set the value to the sample value
-                else 
-                {
-                    value = (short)sample[i];
+                else {
+                    value = (short) sample[i];
                 }
 
                 // add the value to the byte buffer
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[0];
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[1];
+                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value) [0];
+                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value) [1];
             }
 
             // create a new waveprovider using the converted bytes
@@ -365,10 +367,24 @@ namespace TinkeringAudio {
             // return the wave provider
             return waveProvider;
         }
+
+        /// <summary>
+        /// converts a byte list to an int list
+        /// </summary>
+        /// <param name="waveByte">the byte list of the wave</param>
+        /// <param name="sampleRate">the sample rate of the wave</param>
+        /// <param name="channelCount">the number of channels that the track has</param>
+        /// <returns></returns>
+        private List<int> ConvertToListInt(byte[] waveByte, int sampleRate, int channelCount) {
+            List<int> wave = new List<int>();
+
+            return wave;
+        }
+        
         #endregion
 
         #region WAVE TYPES
-        
+
         // this is a wave which amplitude alternates at a freq between fixed min and max values
         /// <summary>
         /// return 1 or -1 depending on the value of the wave
@@ -381,13 +397,11 @@ namespace TinkeringAudio {
             double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
 
             // if the value is greater than 0, return 1
-            if (value > 0) 
-            {
+            if (value > 0) {
                 return 1.0;
-            } 
+            }
             // otherwise, return -1
-            else 
-            {
+            else {
                 return -1.0;
             }
         }
@@ -399,10 +413,9 @@ namespace TinkeringAudio {
         /// <param name="frequency">the frequency of the wave</param>
         /// <param name="position">the position of the sample</param>
         /// <returns>the value</returns>
-        private double SineWave(double frequency, int position) 
-        {
+        private double SineWave(double frequency, int position) {
             // generate the frequency from the sin wave
-            return Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
+            return Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
         }
 
         // a non-sinusoidal wave with a triangular shape
@@ -412,10 +425,9 @@ namespace TinkeringAudio {
         /// <param name="frequency">the frequency of the wave</param>
         /// <param name="position">the position of the sample</param>
         /// <returns>returns a value manipulated to look like a triangle wave</returns>
-        private double TriangleWave(double frequency, int position) 
-        {
+        private double TriangleWave(double frequency, int position) {
             // calculate the value and return it
-            double value = ((2.0 * MAX_VALUE * volume) / Math.PI) *Math.Asin(Math.Sin(2.0 * Math.PI * frequency * position));
+            double value = ((2.0 * MAX_VALUE * volume) / Math.PI) * Math.Asin(Math.Sin(2.0 * Math.PI * frequency * position));
             return value;
         }
 
@@ -426,8 +438,7 @@ namespace TinkeringAudio {
         /// <param name="frequency">the frequency of the wave</param>
         /// <param name="position">the position of the sample</param>
         /// <returns>the manipulated value</returns>
-        private double SawtoothWave(double frequency, int position) 
-        {
+        private double SawtoothWave(double frequency, int position) {
             // calculate and return the value
             double value = (-(2.0 * MAX_VALUE * volume) / Math.PI) * Math.Atan((1 / Math.Tan(Math.PI * frequency * position)));
             return value;
@@ -467,6 +478,8 @@ namespace TinkeringAudio {
 
             // sve the wave to a file
             WaveFileWriter.CreateWaveFile(filename, waveProvider);
+
+            Console.WriteLine(filename);
         }
 
         /// <summary>
@@ -474,8 +487,7 @@ namespace TinkeringAudio {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btn_GenerateWhiteNoise_Click(object sender, EventArgs e) 
-        {
+        private void btn_GenerateWhiteNoise_Click(object sender, EventArgs e) {
             // generate a new wave out fucntion
             WaveOut waveOut = new WaveOut();
 
@@ -496,8 +508,7 @@ namespace TinkeringAudio {
         /// <param name="audioSample0">the first audio sample</param>
         /// <param name="audioSample1">the second audio sample</param>
         /// <returns>the two spliced audio samples</returns>
-        private List<int> AudioSplicing (List<int> audioSample0, List<int> audioSample1)
-        {
+        private List<int> AudioSplicing(List<int> audioSample0, List<int> audioSample1) {
             // declare list for the spliced sounds and set it to first audio sample
             List<int> splicedList = audioSample0;
 
@@ -516,8 +527,7 @@ namespace TinkeringAudio {
         /// <param name="inputList">the sample to add an echo to</param>
         /// <param name="delayInSeconds">the offfset of the echo</param>
         /// <returns>return the sample with its added echo</returns>
-        private List<int> AddingEchos (List<int> inputList, int delayInSeconds)
-        {
+        private List<int> AddingEchos(List<int> inputList, int delayInSeconds) {
             // required: 
             // 1 =< t
             // 1 =< (S) SAMPLE_RATE; 
@@ -532,21 +542,18 @@ namespace TinkeringAudio {
             int echoDuration = delayInSeconds * SAMPLE_RATE;
 
             // run through the input and add the echo to the end
-            for (int i = 0; i < (inputList.Count) + echoDuration; i++)
-            {
+            for (int i = 0; i < (inputList.Count) + echoDuration; i++) {
                 // set the value to 0
                 int value = 0;
 
                 // if the current sample is less than the input sample length
-                if (i < inputList.Count)
-                {
+                if (i < inputList.Count) {
                     // add the input list at index to the value
                     value += inputList[i];
                 }
 
                 // if the echo should be playing
-                if (i - echoDuration > 0)
-                {
+                if (i - echoDuration > 0) {
                     // add the input list at index - echo duration to the value
                     value += inputList[i - echoDuration];
                 }
@@ -566,8 +573,7 @@ namespace TinkeringAudio {
         /// </summary>
         /// <param name="sample">the audio sample to be normalized</param>
         /// <returns>the normalized sound clip</returns>
-        private List<int> Normalisation (List<int> sample)
-        {
+        private List<int> Normalisation(List<int> sample) {
             // declare and set the maximum volume of the sample
             int maxAmplitudeOfSample = sample.Max();
 
@@ -575,8 +581,7 @@ namespace TinkeringAudio {
             int amplitudeRatio = (MAX_VALUE - 1) / maxAmplitudeOfSample;
 
             // run through the values of the sample
-            for (int i = 0; i < (sample.Count); i++)
-            {
+            for (int i = 0; i < (sample.Count); i++) {
                 // declare and set the normalized sample value
                 int normalizedValue = amplitudeRatio * sample[i];
 
@@ -596,8 +601,7 @@ namespace TinkeringAudio {
         /// <param name="audSamp"></param>
         /// <param name="audScale"></param>
         /// <returns>the resampled list</returns>
-        private List<double> Resample (List<double> audSample, double audScale)
-        {
+        private List<double> Resample(List<double> audSample, double audScale) {
             // the modified audioscale 
             double modAudScale = 1.0 / audScale;
 
@@ -605,17 +609,14 @@ namespace TinkeringAudio {
             List<double> resampledList = new List<double>();
 
             // if modified audio scale is greater than 1 then
-            if (modAudScale > 1)
-            {
+            if (modAudScale > 1) {
                 // while the statement i is less than the length of audSample is true execute loop
-                for (int i = 0; i < (audSample.Count); i++)
-                {
+                for (int i = 0; i < (audSample.Count); i++) {
                     // declare double value var
                     double value = 0;
 
                     // while the statement j is less than modified audio scale is true execute loop
-                    for (int j = 0; j < modAudScale; j++)
-                    {
+                    for (int j = 0; j < modAudScale; j++) {
                         // audio sample i+j incriment is added to value
                         value += audSample[i + j];
                     }
@@ -626,10 +627,9 @@ namespace TinkeringAudio {
                     resampledList.Add(value);
                 }
             }
-            
+
             // if modified audio scale is less than 1 then
-            else
-            {
+            else {
                 // declaring the index var
                 int index = 0;
 
@@ -640,8 +640,7 @@ namespace TinkeringAudio {
                 double incrementAmount = 1.0 / audScale;
 
                 // while the statement index is less than the length of audiosample do this
-                do
-                {
+                do {
                     // add audio sample[index] to the resampled list
                     resampledList.Add(audSample[index]);
 
@@ -649,7 +648,7 @@ namespace TinkeringAudio {
                     indexLocation += incrementAmount;
 
                     // index is now declared as l
-                    index = Convert.ToInt32(indexLocation); 
+                    index = Convert.ToInt32(indexLocation);
 
                 } while (index < (audSample.Count));
             }
@@ -666,14 +665,12 @@ namespace TinkeringAudio {
         /// <param name="audSample"></param>
         /// <param name="ampFactor"></param>
         /// <returns>returns a newly scaled list</returns>
-        private List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
-        {
+        private List<int> ScalingAmplitude(List<int> audSample, int ampFactor) {
             // delcares a new list to hold the scaled audio
             List<int> ScaledList = new List<int>();
 
             // while the statement i is less than the length of audio sample then execute loop
-            for (int i = 0; i < (audSample.Count); i++)
-            {
+            for (int i = 0; i < (audSample.Count); i++) {
                 //declares variable v as audio sample instance i multiplied by the amplitude factor
                 int v = audSample[i] * ampFactor;
 
@@ -698,8 +695,7 @@ namespace TinkeringAudio {
         /// <param name="factorFreq"></param>
         /// <param name="w"></param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
-        private List<double> ToneCombine(double duration, List<double> Frequency, double w)
-        {
+        private List<double> ToneCombine(double duration, List<double> Frequency, double w) {
             // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
             // d is the duration 
             // w is ???
@@ -708,14 +704,12 @@ namespace TinkeringAudio {
             List<double> CombinedList = new List<double>();
 
             // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (duration * SAMPLE_RATE); i++)
-            {
+            for (int i = 0; i < (duration * SAMPLE_RATE); i++) {
                 // declares the v variable
                 int value = 0;
-                
+
                 // while the statement i is less than the length of factor freq is true exectute loop
-                for (int j = 0; i < (Frequency.Count); j++)
-                {
+                for (int j = 0; i < (Frequency.Count); j++) {
                     // wavefunction factorfreq[j] and i is added to value
                     value += Convert.ToInt32(waveFunction(Frequency[j], i));
                 }
@@ -734,14 +728,12 @@ namespace TinkeringAudio {
         /// <param name="time"></param>
         /// <param name="resultantVol"></param>
         /// <returns>returns the white list list</returns>
-        private List<double> WhiteNoise (double time, double resultantVol)
-        {
+        private List<double> WhiteNoise(double time, double resultantVol) {
             // declaring new list for the two tones to combine in 
             List<double> WhiteList = new List<double>();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * SAMPLE_RATE); i++)
-            {
+            for (int i = 0; i < (time * SAMPLE_RATE); i++) {
                 //create a random variable which generates new random each for loop
                 Random rand = new Random();
 
@@ -755,26 +747,19 @@ namespace TinkeringAudio {
 
         // must create 4 new melodies using waves to create ambient music for 
 
-        private void Villagebtn_Click(object sender, EventArgs e)
-        {
-            GenerateSilence(1);
-        }
-
-
-        private void Forestbtn_Click(object sender, EventArgs e)
-        {
+        private void Villagebtn_Click(object sender, EventArgs e) {
 
         }
 
-
-        private void Cavebtn_Click(object sender, EventArgs e)
-        {
+        private void Forestbtn_Click(object sender, EventArgs e) {
 
         }
 
+        private void Cavebtn_Click(object sender, EventArgs e) {
 
-        private void Oceanbtn_Click(object sender, EventArgs e)
-        {
+        }
+
+        private void Oceanbtn_Click(object sender, EventArgs e) {
 
         }
 
