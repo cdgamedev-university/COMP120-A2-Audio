@@ -619,11 +619,7 @@ namespace TinkeringAudio {
                     indexLocation += incrementAmount;
 
                     // index is now declared as l
-<<<<<<< HEAD
-                    index = Convert.ToInt32(l);
-=======
-                    index = Convert.ToInt32(indexLocation); 
->>>>>>> c84e62788b61028d258bdfbce33fb1dfc358e5c3
+                    index = Convert.ToInt32(indexLocation);
 
                 } while (index < (audSample.Count));
             }
