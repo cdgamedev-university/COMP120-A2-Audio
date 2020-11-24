@@ -131,7 +131,7 @@ namespace TinkeringAudio {
 
                     // read the bytes from the file and log how many bytes were read
                     Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
-                    
+
                     // create a new wave provider using the bytes read
                     IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(SAMPLE_RATE, 16, 1));
 
