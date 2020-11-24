@@ -605,10 +605,10 @@ namespace TinkeringAudio {
                 int index = 0;
 
                 // declaring the l var
-                double l = 0.0;
+                double indexLocation = 0.0;
 
                 // declaring m as 1 divided by the audio scale
-                double m = 1.0 / audScale;
+                double incrementAmount = 1.0 / audScale;
 
                 // while the statement index is less than the length of audiosample do this
                 do {
@@ -616,10 +616,14 @@ namespace TinkeringAudio {
                     resampledList.Add(audSample[index]);
 
                     // m is added into l
-                    l = l + m;
+                    indexLocation += incrementAmount;
 
                     // index is now declared as l
+<<<<<<< HEAD
                     index = Convert.ToInt32(l);
+=======
+                    index = Convert.ToInt32(indexLocation); 
+>>>>>>> c84e62788b61028d258bdfbce33fb1dfc358e5c3
 
                 } while (index < (audSample.Count));
             }
