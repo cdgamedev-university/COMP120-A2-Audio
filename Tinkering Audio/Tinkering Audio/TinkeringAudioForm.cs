@@ -700,7 +700,6 @@ namespace TinkeringAudio {
 
         #endregion
 
-
         #region AMBIENCE BUTTONS
         private void Villagebtn_Click(object sender, EventArgs e) 
         {
@@ -717,7 +716,6 @@ namespace TinkeringAudio {
             // tone combine wind/bird/insect with loaded audio sound file
             // scale amplitude up slightly on edited spliced audio
             // then finally normalize it to ensure that one spliced audio is louder than the other
-
         }
 
         private void Cavebtn_Click(object sender, EventArgs e) 
