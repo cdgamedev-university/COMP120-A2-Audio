@@ -116,9 +116,9 @@
             // 
             // Ambiencetxt
             // 
-            this.Ambiencetxt.Location = new System.Drawing.Point(349, 133);
+            this.Ambiencetxt.Location = new System.Drawing.Point(343, 133);
             this.Ambiencetxt.Name = "Ambiencetxt";
-            this.Ambiencetxt.Size = new System.Drawing.Size(93, 19);
+            this.Ambiencetxt.Size = new System.Drawing.Size(112, 19);
             this.Ambiencetxt.TabIndex = 8;
             this.Ambiencetxt.Text = "Ambience Buttons";
             // 

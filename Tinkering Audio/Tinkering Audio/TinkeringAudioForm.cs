@@ -101,8 +101,6 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        
-
         #region GENERATE FUNCTIONS
         /// <summary>
         /// function to generate silence
@@ -734,7 +732,8 @@ namespace TinkeringAudio {
         }
     }
 
-    public class AudioIO {
+    public class AudioIO 
+    {
         #region SAVING AND LOADING FILES
         public WaveOut LoadAudioClip() {
             // create a new file dialog (pop up window to browse windows explorer)
