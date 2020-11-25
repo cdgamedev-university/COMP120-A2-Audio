@@ -19,7 +19,7 @@
 //***************************************************************************\\
 #region Copyright & License Information
 //***************************************************************************\\
-// Copyright 2020 Daisy Baker and Hayley Davies                              \\
+// Copyright (c) 2020 Daisy Baker and Hayley Davies                          \\
 // Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk               \\
 //                                                                           \\
 // Any sample audio distributed with this project is Copyright of Otis Hull  \\
@@ -28,7 +28,7 @@
 // Licensed under GNU GENERAL PUBLIC LICENSE (the "License")                 \\
 // you may not use this file except in compliance with the License           \\
 // You may obtain a copy of the License at:                                  \\
-// https://choosealicense.com/licenses/gpl-3.0/                              \\
+// https://www.gnu.org/licenses/gpl-3.0.en.html                              \\
 //                                                                           \\
 // Unless required by applicable law or agreed to in writing, software       \\
 // distributed under the License is distributed on an "AS IS" BASIS,         \\
@@ -57,7 +57,9 @@ namespace TinkeringAudio {
     {
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second - 44100 because thats how many samples per sec humans can hear
-        private readonly int SAMPLE_RATE = 44100;
+        public int sampleRate = 44100;
+
+        public int channelCount = 1;
 
         // 2 to power of 15 is 32768 - the maximum value we want
         private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
@@ -77,7 +79,9 @@ namespace TinkeringAudio {
         private List<double> notes;
         private double[] noteDuration;
 
-        private AudioIO audioIO = new AudioIO();
+        private AudioFileIO audioFileIO;
+
+        private byte[] loadedWaveByte;
         #endregion
 
         #region FORM INITIALISATION AND LOADS
@@ -85,6 +89,7 @@ namespace TinkeringAudio {
         public TinkeringAudioForm() 
         {
             InitializeComponent();
+            audioFileIO = new AudioFileIO(this);
         }
 
         // when the form loads
@@ -101,8 +106,6 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        
-
         #region GENERATE FUNCTIONS
         /// <summary>
         /// function to generate silence
@@ -111,7 +114,7 @@ namespace TinkeringAudio {
         /// <returns>returns notes as a List of ints</returns>
         private List<int> GenerateSilence(double durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * sampleRate);
 
             // declare the silence as a new List of ints
             List<int> silence = new List<int>();
@@ -134,7 +137,7 @@ namespace TinkeringAudio {
         /// <returns>returns a tone as a List of ints</returns>
         private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * sampleRate);
 
             // delcare the tone as a new List<int>
             List<int> tone = new List<int>();
@@ -197,7 +200,7 @@ namespace TinkeringAudio {
         /// <returns>the white noise</returns>
         private List<int> GenerateWhiteNoise(int durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * sampleRate);
 
             // create a new random
             Random prng = new Random();
@@ -331,7 +334,7 @@ namespace TinkeringAudio {
         /// <returns></returns>
         private double SquareWave(double frequency, int position) {
             // calculate the value
-            double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
+            double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double)sampleRate));
 
             // if the value is greater than 0, return 1
             if (value > 0) {
@@ -352,7 +355,7 @@ namespace TinkeringAudio {
         /// <returns>the value</returns>
         private double SineWave(double frequency, int position) {
             // generate the frequency from the sin wave
-            return Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
+            return Math.Sin(2.0 * Math.PI * frequency * (position / (double)sampleRate));
         }
 
         // a non-sinusoidal wave with a triangular shape
@@ -391,7 +394,7 @@ namespace TinkeringAudio {
         /// <param name="e"></param>
         private void btn_GenerateMelody_Click(object sender, EventArgs e) {
             // set the wave provider generated by the random melody function, converted to bytes
-            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), SAMPLE_RATE, 1);
+            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), sampleRate, 1);
 
             // create a new wave out
             waveOut = new WaveOut();
@@ -408,7 +411,7 @@ namespace TinkeringAudio {
         /// <param name="e"></param>
         private void btn_SaveMelody_Click(object sender, EventArgs e) {
             // set the wave provider generated by the random melody function, converted to bytes
-            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), SAMPLE_RATE, 1);
+            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), sampleRate, 1);
 
             // get the file name
             string filename = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
@@ -429,7 +432,7 @@ namespace TinkeringAudio {
             WaveOut waveOut = new WaveOut();
 
             // initialse the wave function using the white noise generator copnverted to bytes
-            waveOut.Init(convertToWaveProvider16(GenerateWhiteNoise(12), SAMPLE_RATE, 1));
+            waveOut.Init(convertToWaveProvider16(GenerateWhiteNoise(12), sampleRate, 1));
 
             // play the wave out
             waveOut.Play();
@@ -467,7 +470,7 @@ namespace TinkeringAudio {
         private List<int> AddingEchos(List<int> inputList, int delayInSeconds) {
             // required: 
             // 1 =< t
-            // 1 =< (S) SAMPLE_RATE; 
+            // 1 =< (S) sampleRate; 
 
             // there is an input list s, where the input is extended by t seconds
             // combines input list with delayed copy of itself
@@ -476,7 +479,7 @@ namespace TinkeringAudio {
             List<int> echoList = new List<int>();
 
             // the duration of the echo added to the end
-            int echoDuration = delayInSeconds * SAMPLE_RATE;
+            int echoDuration = delayInSeconds * sampleRate;
 
             // run through the input and add the echo to the end
             for (int i = 0; i < (inputList.Count) + echoDuration; i++) {
@@ -640,7 +643,7 @@ namespace TinkeringAudio {
             List<double> CombinedList = new List<double>();
 
             // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (duration * SAMPLE_RATE); i++) {
+            for (int i = 0; i < (duration * sampleRate); i++) {
                 // declares the v variable
                 int value = 0;
 
@@ -670,7 +673,7 @@ namespace TinkeringAudio {
             List<double> WhiteList = new List<double>();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * SAMPLE_RATE); i++) 
+            for (int i = 0; i < (time * sampleRate); i++) 
             {
                 //create a random variable which generates new random each for loop
                 Random rand = new Random();
@@ -719,13 +722,35 @@ namespace TinkeringAudio {
 
         private void btn_LoadAudioFile_Click(object sender, EventArgs e) 
         {
-            waveOut = audioIO.LoadAudioClip();
+            loadedWaveByte = audioFileIO.LoadAudioClip();
+            if (loadedWaveByte != null) {
+
+            }
+
+            Console.WriteLine("Channel Count: {0}, Sample Rate: {1}", channelCount, sampleRate);
+        }
+
+        private void btn_SaveAudioFile_Click(object sender, EventArgs e) {
+            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), sampleRate, 1);
+
+            audioFileIO.SaveAudioClip(waveProvider);
         }
     }
 
-    public class AudioIO {
+    /// <summary>
+    /// class for dealing with audio input and output
+    /// </summary>
+    public class AudioFileIO {
+
+        public AudioFileIO(TinkeringAudioForm sender) {
+            m_sender = sender;
+        }
+
+        public TinkeringAudioForm m_sender;
+
         #region SAVING AND LOADING FILES
-        public WaveOut LoadAudioClip() {
+        byte[] buffer;
+        public byte[] LoadAudioClip() {
             // create a new file dialog (pop up window to browse windows explorer)
             OpenFileDialog openFileDialog = new OpenFileDialog {
                 // set the initial directory to be the C drive
@@ -755,27 +780,16 @@ namespace TinkeringAudio {
                     int sampleRate = waveFileReader.WaveFormat.SampleRate;
                     int channelCount = waveFileReader.WaveFormat.Channels;
 
+                    m_sender.sampleRate = sampleRate;
+                    m_sender.channelCount = channelCount;
 
                     // generate a wave prodivder from the file
                     IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
 
                     // create a buffer to store the bytes
-                    byte[] buffer = new byte[waveFileReader.Length];
+                    buffer = new byte[waveFileReader.Length];
 
-                    // read the bytes from the file and log how many bytes were read
-                    Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
-
-                    // create a new wave provider using the bytes read
-                    IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(sampleRate, 16, 1));
-
-                    // create a new wave out
-                    WaveOut waveOut = new WaveOut();
-                    // intialize the wave out using the audio file reader
-                    waveOut.Init(newWaveProvider);
-                    // play the wave out
-                    waveOut.Play();
-
-                    return waveOut;
+                    return buffer;
                 }
                 // if there is a format exception
                 catch (FormatException) {
@@ -795,11 +809,17 @@ namespace TinkeringAudio {
                 }
             }
 
-            return null;
+            return buffer;
         }
 
-        public void SaveAudioClip() {
+        public void SaveAudioClip(IWaveProvider waveProvider) {
+            // get the file name
+            string filename = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
 
+            // sve the wave to a file
+            WaveFileWriter.CreateWaveFile(filename, waveProvider);
+
+            Console.WriteLine(filename);
         }
         #endregion
     }
