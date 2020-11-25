@@ -35,6 +35,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  \\
 // See the License for the specific language governing permissions and       \\
 // limitations under the License.                                            \\
+//                                                                           \\
+// For this project we decided on the GNU GENERAL PUBLIC LICENSE. This is    \\
+// because the GNU license is intended for open-source software that         \\
+// guarantees end users the freedom to run, study, share and modify the      \\
+// software as they please. However, for both the user's and authors,        \\
+// it is required that modified versions be marked as changed so  that any   \\
+// problems will not be attributed incorrectly to the author. The second     \\
+// reason being that the GNU prohibits any closed-soure software using       \\
+// this source code this so it can remain free to everyone, and when         \\
+// referring to the software as free, we are referring to the freedom        \\
+// of the software.                                                          \\
+//                                                                           \\
 //***************************************************************************\\
 #endregion
 
