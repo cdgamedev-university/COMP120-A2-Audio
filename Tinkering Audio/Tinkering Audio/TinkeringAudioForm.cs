@@ -451,7 +451,7 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        #region MELODY BUTTONS
+        #region ALGORITHIMS
 
         #region AudioSplicing
         /// <summary>
@@ -555,25 +555,25 @@ namespace TinkeringAudio {
         /// <returns>the resampled list</returns>
         private List<double> Resample(List<double> audSample, double audScale) {
             // the modified audioscale 
-            double modAudScale = 1.0 / audScale;
+            double modAudioScale = 1.0 / audScale;
 
             //declares list for the resampled sound
             List<double> resampledList = new List<double>();
 
             // if modified audio scale is greater than 1 then
-            if (modAudScale > 1) {
+            if (modAudioScale > 1) {
                 // while the statement i is less than the length of audSample is true execute loop
                 for (int i = 0; i < (audSample.Count); i++) {
                     // declare double value var
                     double value = 0;
 
                     // while the statement j is less than modified audio scale is true execute loop
-                    for (int j = 0; j < modAudScale; j++) {
+                    for (int j = 0; j < modAudioScale; j++) {
                         // audio sample i+j incriment is added to value
                         value += audSample[i + j];
                     }
                     // value is divided by the modified audio scale
-                    value = value / modAudScale;
+                    value = value / modAudioScale;
 
                     // adds value onto the resampled list
                     resampledList.Add(value);
@@ -698,16 +698,25 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        // must create 4 new melodies using waves to create ambient music for 
+        #endregion
 
+
+        #region AMBIENCE BUTTONS
         private void Villagebtn_Click(object sender, EventArgs e) 
         {
-
+            // load sound file first
+            // tone combine happy beat with birds/insects
+            // normalize sound file
         }
 
         private void Forestbtn_Click(object sender, EventArgs e) 
         {
             // load sound file first
+            // audio splice bird and insect sound
+            // tone combine wind sound with audio spliced bird + insect sound
+            // tone combine wind/bird/insect with loaded audio sound file
+            // scale amplitude up slightly on edited spliced audio
+            // then finally normalize it to ensure that one spliced audio is louder than the other
 
         }
 
@@ -729,7 +738,6 @@ namespace TinkeringAudio {
             // List<double> echoNoise = AddingEchos(Loaded File here, 3);
             // list<double> twoTones = twoTones.add(whiteNoise, echoNoise);
         }
-
         #endregion
 
         private void btn_LoadAudioFile_Click(object sender, EventArgs e) 
