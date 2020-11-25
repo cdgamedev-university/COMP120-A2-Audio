@@ -674,9 +674,9 @@ namespace TinkeringAudio {
                 //declares variable v as audio sample instance i multiplied by the amplitude factor
                 int v = audSample[i] * ampFactor;
 
-                // v = Math.Max((Math.Max(v)), v);
+                v = Math.Max((v), v);
 
-                // v = Math.Min((Math.Min(v)), v);
+                v = Math.Min((v), v);
 
                 // adds v to the scaled list
                 ScaledList.Add(v);
