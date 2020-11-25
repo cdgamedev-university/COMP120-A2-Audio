@@ -92,7 +92,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\wind.wav" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ambience cave drips - Copy.wav" />
   </ItemGroup>

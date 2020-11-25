@@ -728,13 +728,18 @@ namespace TinkeringAudio {
 
         private void Oceanbtn_Click(object sender, EventArgs e) 
         {
+
+            Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
+
+            List<double> whiteNoise = WhiteNoise(2, 0.4);
+            // List<double> echoNoise = AddingEchos(windAudio, 3);
+            List<double> twoTones = twoTones.add(whiteNoise, echoNoise);
+
             // load sound file first
             // tone combine white noise over audio sample
             // tone combine echo with edited audio sample
 
-            // List<double> whiteNoise = WhiteNoise(2, 0.4);
-            // List<double> echoNoise = AddingEchos(Loaded File here, 3);
-            // list<double> twoTones = twoTones.add(whiteNoise, echoNoise);
+            
         }
         #endregion
 

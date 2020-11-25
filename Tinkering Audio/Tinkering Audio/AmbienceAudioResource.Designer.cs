@@ -104,5 +104,14 @@ namespace Tinkering_Audio {
                 return ResourceManager.GetStream("water_drip_underground___Copy", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream wind {
+            get {
+                return ResourceManager.GetStream("wind", resourceCulture);
+            }
+        }
     }
 }
