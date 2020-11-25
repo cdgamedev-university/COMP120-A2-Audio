@@ -31,6 +31,7 @@
             this.Cavebtn = new System.Windows.Forms.Button();
             this.Oceanbtn = new System.Windows.Forms.Button();
             this.btn_LoadAudioFile = new System.Windows.Forms.Button();
+            this.Ambiencetxt = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // btn_GenerateMelody
@@ -113,11 +114,20 @@
             this.btn_LoadAudioFile.UseVisualStyleBackColor = true;
             this.btn_LoadAudioFile.Click += new System.EventHandler(this.btn_LoadAudioFile_Click);
             // 
+            // Ambiencetxt
+            // 
+            this.Ambiencetxt.Location = new System.Drawing.Point(349, 133);
+            this.Ambiencetxt.Name = "Ambiencetxt";
+            this.Ambiencetxt.Size = new System.Drawing.Size(93, 19);
+            this.Ambiencetxt.TabIndex = 8;
+            this.Ambiencetxt.Text = "Ambience Buttons";
+            // 
             // TinkeringAudioForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Ambiencetxt);
             this.Controls.Add(this.btn_LoadAudioFile);
             this.Controls.Add(this.Oceanbtn);
             this.Controls.Add(this.Cavebtn);
@@ -143,6 +153,7 @@
         private System.Windows.Forms.Button Cavebtn;
         private System.Windows.Forms.Button Oceanbtn;
         private System.Windows.Forms.Button btn_LoadAudioFile;
+        private System.Windows.Forms.RichTextBox Ambiencetxt;
     }
 }
 
