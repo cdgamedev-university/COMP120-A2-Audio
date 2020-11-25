@@ -53,7 +53,8 @@ using NAudio;
 using NAudio.Wave;
 
 namespace TinkeringAudio {
-    public partial class TinkeringAudioForm : Form {
+    public partial class TinkeringAudioForm : Form 
+    {
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second - 44100 because thats how many samples per sec humans can hear
         private readonly int SAMPLE_RATE = 44100;
@@ -81,12 +82,14 @@ namespace TinkeringAudio {
 
         #region FORM INITIALISATION AND LOADS
         // initialise the form
-        public TinkeringAudioForm() {
+        public TinkeringAudioForm() 
+        {
             InitializeComponent();
         }
 
         // when the form loads
-        private void TinkeringAudioForm_Load(object sender, EventArgs e) {
+        private void TinkeringAudioForm_Load(object sender, EventArgs e) 
+        {
             // set the wave function
             this.waveFunction = SquareWave;
 
@@ -591,7 +594,6 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        // ERROR in scaling amplitude to fix
         #region Scaling Amplitude
         /// <summary>
         /// this function will scale the amplitude of a audio sample to either make it louder or quieter
@@ -662,12 +664,14 @@ namespace TinkeringAudio {
         /// <param name="time"></param>
         /// <param name="resultantVol"></param>
         /// <returns>returns the white list list</returns>
-        private List<double> WhiteNoise(double time, double resultantVol) {
+        private List<double> WhiteNoise(double time, double resultantVol) 
+        {
             // declaring new list for the two tones to combine in 
             List<double> WhiteList = new List<double>();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * SAMPLE_RATE); i++) {
+            for (int i = 0; i < (time * SAMPLE_RATE); i++) 
+            {
                 //create a random variable which generates new random each for loop
                 Random rand = new Random();
 
@@ -681,25 +685,40 @@ namespace TinkeringAudio {
 
         // must create 4 new melodies using waves to create ambient music for 
 
-        private void Villagebtn_Click(object sender, EventArgs e) {
+        private void Villagebtn_Click(object sender, EventArgs e) 
+        {
 
         }
 
-        private void Forestbtn_Click(object sender, EventArgs e) {
+        private void Forestbtn_Click(object sender, EventArgs e) 
+        {
+            // load sound file first
 
         }
 
-        private void Cavebtn_Click(object sender, EventArgs e) {
-
+        private void Cavebtn_Click(object sender, EventArgs e) 
+        {
+            // load sound file first
+            // tone combine white noise over audio sample
+            // tone combine echo over audio sample
+            // normalize final editied audio sample
         }
 
-        private void Oceanbtn_Click(object sender, EventArgs e) {
+        private void Oceanbtn_Click(object sender, EventArgs e) 
+        {
+            // load sound file first
+            // tone combine white noise over audio sample
+            // tone combine echo with edited audio sample
 
+            // List<double> whiteNoise = WhiteNoise(2, 0.4);
+            // List<double> echoNoise = AddingEchos(Loaded File here, 3);
+            // list<double> twoTones = twoTones.add(whiteNoise, echoNoise);
         }
 
         #endregion
 
-        private void btn_LoadAudioFile_Click(object sender, EventArgs e) {
+        private void btn_LoadAudioFile_Click(object sender, EventArgs e) 
+        {
             waveOut = audioIO.LoadAudioClip();
         }
     }
