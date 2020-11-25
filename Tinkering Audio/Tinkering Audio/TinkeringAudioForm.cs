@@ -60,7 +60,7 @@ namespace TinkeringAudio {
         private readonly int SAMPLE_RATE = 44100;
 
         // 2 to power of 15 is 32768 - the maximum value we want
-        private readonly int MAX_VALUE = (int) Math.Pow(2, 15);
+        private readonly int MAX_VALUE = (int)Math.Pow(2, 15);
 
         // double var to hold volume level
         private double volume = 0.08;
@@ -76,6 +76,8 @@ namespace TinkeringAudio {
         // variables to store the note information
         private List<double> notes;
         private double[] noteDuration;
+
+        private AudioIO audioIO = new AudioIO();
         #endregion
 
         #region FORM INITIALISATION AND LOADS
@@ -99,81 +101,7 @@ namespace TinkeringAudio {
         }
         #endregion
 
-        #region SAVING AND LOADING FILES
-        void LoadAudioClip() 
-        {
-            // create a new file dialog (pop up window to browse windows explorer)
-            OpenFileDialog openFileDialog = new OpenFileDialog 
-            {
-                // set the initial directory to be the C drive
-                InitialDirectory = "C:\\",
-                    // add some filters to the dialog
-                    Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
-                    +
-                    "All files (*.*)|*.*", // all files
-                    FilterIndex = 1, // start the filter index at 1 (supported files)
-                    RestoreDirectory = true, // enable restoring directory when the dialog is closed
-                    Title = "Load an audio file..." // change the title to something more fitting
-            };
-
-            // open the file dialog, if the OK button is pressed
-            if (openFileDialog.ShowDialog() == DialogResult.OK) 
-            {
-                Stopwatch s = Stopwatch.StartNew();
-
-                // try to run the following
-                try 
-                {
-                    // set the path to the file name
-                    string path = openFileDialog.FileName;
-
-                    // create a new file reader for the file
-                    WaveFileReader waveFileReader = new WaveFileReader(path);
-
-                    // generate a wave prodivder from the file
-                    IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
-
-                    // create a buffer to store the bytes
-                    byte[] buffer = new byte[waveFileReader.Length];
-
-                    // read the bytes from the file and log how many bytes were read
-                    Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
-
-                    // create a new wave provider using the bytes read
-                    IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(SAMPLE_RATE, 16, 1));
-
-                    // create a new wave out
-                    waveOut = new WaveOut();
-                    // intialize the wave out using the audio file reader
-                    waveOut.Init(newWaveProvider);
-                    // play the wave out
-                    waveOut.Play();
-                }
-
-                // if there is a format exception
-                catch (FormatException) 
-                {
-                    // set the message of the message box
-                    string message = "This file doesn't appear to be a supported audio format. Please choose a different file.";
-                    // set the caption of the message box
-                    string caption = "Audio Import Error";
-
-                    // set the message box to have only the ok button shown
-                    MessageBoxButtons buttons = MessageBoxButtons.OK;
-
-                    // show the message box with the above details
-                    MessageBox.Show(message, caption, buttons);
-
-                    // call the function again
-                    LoadAudioClip();
-                }
-            }
-        }
-
-        void SaveAudioClip() {
-
-        }
-        #endregion
+        
 
         #region GENERATE FUNCTIONS
         /// <summary>
@@ -183,7 +111,7 @@ namespace TinkeringAudio {
         /// <returns>returns notes as a List of ints</returns>
         private List<int> GenerateSilence(double durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
 
             // declare the silence as a new List of ints
             List<int> silence = new List<int>();
@@ -206,7 +134,7 @@ namespace TinkeringAudio {
         /// <returns>returns a tone as a List of ints</returns>
         private List<int> GenerateTone(double durationInSeconds, WaveFunction waveFunction, double[] frequencies) {
             // calculate the duration of the sample
-            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
 
             // delcare the tone as a new List<int>
             List<int> tone = new List<int>();
@@ -222,10 +150,10 @@ namespace TinkeringAudio {
                 // run through the the frequencies
                 for (int j = 0; j < frequencies.Length; j++) {
                     // adjust the value of the tone
-                    value += (short) (MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
+                    value += (short)(MAX_VALUE * volume * waveFunction.Invoke(frequencies[j], i));
                 }
                 // add the value to the list of tone
-                tone.Add(BitConverter.GetBytes(value) [0]);
+                tone.Add(BitConverter.GetBytes(value)[0]);
             }
             // return the tone
             return tone;
@@ -269,7 +197,7 @@ namespace TinkeringAudio {
         /// <returns>the white noise</returns>
         private List<int> GenerateWhiteNoise(int durationInSeconds) {
             // calculate the duration of the sample
-            int sampleDuration = (int) (durationInSeconds * SAMPLE_RATE);
+            int sampleDuration = (int)(durationInSeconds * SAMPLE_RATE);
 
             // create a new random
             Random prng = new Random();
@@ -280,7 +208,7 @@ namespace TinkeringAudio {
             // run through for the sample duration
             for (int i = 0; i < sampleDuration; i++) {
                 // generate a random value
-                int value = (int) (prng.Next(-1, 1) * volume * MAX_VALUE);
+                int value = (int)(prng.Next(-1, 1) * volume * MAX_VALUE);
 
                 // add the value to the noise list
                 noise.Add(value);
@@ -353,21 +281,21 @@ namespace TinkeringAudio {
                 // if the sample value is greater than the max value
                 // set the value to the max value
                 if (sample[i] > MAX_VALUE) {
-                    value = (short) MAX_VALUE;
+                    value = (short)MAX_VALUE;
                 }
                 // else if the sample value is less than the minimum value
                 // set the value to the min value
                 else if (sample[i] < -MAX_VALUE) {
-                    value = (short) - MAX_VALUE;
+                    value = (short)-MAX_VALUE;
                 }
                 // otherwise set the value to the sample value
                 else {
-                    value = (short) sample[i];
+                    value = (short)sample[i];
                 }
 
                 // add the value to the byte buffer
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value) [0];
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value) [1];
+                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[0];
+                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[1];
             }
 
             // create a new waveprovider using the converted bytes
@@ -389,7 +317,7 @@ namespace TinkeringAudio {
 
             return wave;
         }
-        
+
         #endregion
 
         #region WAVE TYPES
@@ -403,7 +331,7 @@ namespace TinkeringAudio {
         /// <returns></returns>
         private double SquareWave(double frequency, int position) {
             // calculate the value
-            double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
+            double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
 
             // if the value is greater than 0, return 1
             if (value > 0) {
@@ -424,7 +352,7 @@ namespace TinkeringAudio {
         /// <returns>the value</returns>
         private double SineWave(double frequency, int position) {
             // generate the frequency from the sin wave
-            return Math.Sin(2.0 * Math.PI * frequency * (position / (double) SAMPLE_RATE));
+            return Math.Sin(2.0 * Math.PI * frequency * (position / (double)SAMPLE_RATE));
         }
 
         // a non-sinusoidal wave with a triangular shape
@@ -802,7 +730,88 @@ namespace TinkeringAudio {
 
         private void btn_LoadAudioFile_Click(object sender, EventArgs e) 
         {
-            LoadAudioClip();
+            waveOut = audioIO.LoadAudioClip();
         }
+    }
+
+    public class AudioIO {
+        #region SAVING AND LOADING FILES
+        public WaveOut LoadAudioClip() {
+            // create a new file dialog (pop up window to browse windows explorer)
+            OpenFileDialog openFileDialog = new OpenFileDialog {
+                // set the initial directory to be the C drive
+                InitialDirectory = "C:\\",
+                // add some filters to the dialog
+                Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
+                    +
+                    "All files (*.*)|*.*", // all files
+                FilterIndex = 1, // start the filter index at 1 (supported files)
+                RestoreDirectory = true, // enable restoring directory when the dialog is closed
+                Title = "Load an audio file..." // change the title to something more fitting
+            };
+
+            // open the file dialog, if the OK button is pressed
+            if (openFileDialog.ShowDialog() == DialogResult.OK) {
+                Stopwatch s = Stopwatch.StartNew();
+
+                // try to run the following
+                try {
+                    // set the path to the file name
+                    string path = openFileDialog.FileName;
+
+                    // create a new file reader for the file
+                    WaveFileReader waveFileReader = new WaveFileReader(path);
+
+                    // get the sample rate and channel count of the wave file
+                    int sampleRate = waveFileReader.WaveFormat.SampleRate;
+                    int channelCount = waveFileReader.WaveFormat.Channels;
+
+
+                    // generate a wave prodivder from the file
+                    IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
+
+                    // create a buffer to store the bytes
+                    byte[] buffer = new byte[waveFileReader.Length];
+
+                    // read the bytes from the file and log how many bytes were read
+                    Console.WriteLine("Total bytes read: {0}", waveProvider.Read(buffer, 0, (int)waveFileReader.Length));
+
+                    // create a new wave provider using the bytes read
+                    IWaveProvider newWaveProvider = new RawSourceWaveStream(new MemoryStream(buffer), new WaveFormat(sampleRate, 16, 1));
+
+                    // create a new wave out
+                    WaveOut waveOut = new WaveOut();
+                    // intialize the wave out using the audio file reader
+                    waveOut.Init(newWaveProvider);
+                    // play the wave out
+                    waveOut.Play();
+
+                    return waveOut;
+                }
+                // if there is a format exception
+                catch (FormatException) {
+                    // set the message of the message box
+                    string message = "This file doesn't appear to be a supported audio format. Please choose a different file.";
+                    // set the caption of the message box
+                    string caption = "Audio Import Error";
+
+                    // set the message box to have only the ok button shown
+                    MessageBoxButtons buttons = MessageBoxButtons.OK;
+
+                    // show the message box with the above details
+                    MessageBox.Show(message, caption, buttons);
+
+                    // call the function again
+                    LoadAudioClip();
+                }
+            }
+
+            return null;
+        }
+
+        public void SaveAudioClip() {
+
+        }
+        #endregion
     }
 }
