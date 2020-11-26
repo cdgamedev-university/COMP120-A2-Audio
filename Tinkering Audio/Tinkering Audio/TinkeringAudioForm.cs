@@ -75,7 +75,7 @@ namespace TinkeringAudio {
         public readonly int MAX_VALUE = (int)Math.Pow(2, 15);
 
         // double var to hold volume level
-        private double volume = 0.08;
+        private double volume = 0.8;
 
         // allows ability to treat function like variable
         public delegate double WaveFunction(double frequency, int position);
@@ -289,57 +289,122 @@ namespace TinkeringAudio {
         /// <param name="channelCount">the amount of channels the soundtrack has</param>
         /// <returns>the new wave provider</returns>
         private IWaveProvider convertToWaveProvider16(List<int> sample, int sampleRate, int channelCount) {
-            // create a new array of bytes as we are dealing with 16 bit sound
-            byte[] byteBuffer = new byte[sample.Count * 2];
-
-            // set the array index to 0
-            int byteArrayIndex = 0;
-
-            // declare a value
-            short value;
-
-            // run through the sample
-            for (int i = 0; i < sample.Count; i++) {
-                // if the sample value is greater than the max value
-                // set the value to the max value
-                if (sample[i] > MAX_VALUE) {
-                    value = (short)MAX_VALUE;
+            try {
+                if (sample == null) {
+                    throw new ArgumentNullException();
                 }
-                // else if the sample value is less than the minimum value
-                // set the value to the min value
-                else if (sample[i] < -MAX_VALUE) {
-                    value = (short)-MAX_VALUE;
-                }
-                // otherwise set the value to the sample value
-                else {
-                    value = (short)sample[i];
+                // create a new array of bytes as we are dealing with 16 bit sound
+                byte[] byteBuffer = new byte[sample.Count * 2];
+
+                // set the array index to 0
+                int byteArrayIndex = 0;
+
+                // declare a value
+                short value;
+
+                // run through the sample
+                for (int i = 0; i < sample.Count; i++) {
+                    // if the sample value is greater than the max value
+                    // set the value to the max value
+                    if (sample[i] > MAX_VALUE) {
+                        value = (short)MAX_VALUE;
+                    }
+                    // else if the sample value is less than the minimum value
+                    // set the value to the min value
+                    else if (sample[i] < -MAX_VALUE) {
+                        value = (short)-MAX_VALUE;
+                    }
+                    // otherwise set the value to the sample value
+                    else {
+                        value = (short)sample[i];
+                    }
+
+                    // add the value to the byte buffer
+                    byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[0];
+                    byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[1];
                 }
 
-                // add the value to the byte buffer
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[0];
-                byteBuffer[byteArrayIndex++] = BitConverter.GetBytes(value)[1];
+                // create a new waveprovider using the converted bytes
+                IWaveProvider waveProvider = new RawSourceWaveStream(new MemoryStream(byteBuffer), new WaveFormat(sampleRate, 16, channelCount));
+
+                // return the wave provider
+                return waveProvider;
+            } catch (ArgumentNullException) {
+                // call the exception handler to deal with the exception
+                TinkeringAudioExceptionHandler.ExceptionHandler("Argument Null Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
+            } catch {
+                // call the exception handler to deal with the exception
+                TinkeringAudioExceptionHandler.ExceptionHandler("Undefined Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
             }
 
-            // create a new waveprovider using the converted bytes
-            IWaveProvider waveProvider = new RawSourceWaveStream(new MemoryStream(byteBuffer), new WaveFormat(sampleRate, 16, channelCount));
-
-            // return the wave provider
-            return waveProvider;
+            return null;
         }
 
         /// <summary>
         /// converts a byte list to an int list
         /// </summary>
         /// <param name="waveByte">the byte list of the wave</param>
-        /// <param name="sampleRate">the sample rate of the wave</param>
-        /// <param name="channelCount">the number of channels that the track has</param>
         /// <returns></returns>
-        private List<int> ConvertToListInt(byte[] waveByte, int sampleRate, int channelCount) {
+        private List<int> ConvertToListInt(byte[] waveByte) {
+            int waveLength = waveByte.Length / 2;
+
             List<int> wave = new List<int>();
+
+            int byteArrayIndex = 0;
+
+            byte[] value = new byte[2];
+
+            for (int i = 0; i < waveLength; i++) {
+                value[0] = waveByte[byteArrayIndex++];
+                value[1] = waveByte[byteArrayIndex++];
+
+                wave.Add(BitConverter.ToInt16(value, 0));
+            }
 
             return wave;
         }
 
+        #endregion
+
+        #region AUDIO PLAYBACK
+        /// <summary>
+        /// function to make the audio play
+        /// </summary>
+        void PlayAudio() {
+            // if the wave provider isn't null
+            if (waveProvider != null) {
+                // play the sound
+                waveOut.Play();
+            }
+        }
+
+        /// <summary>
+        /// function to make the audio stop
+        /// </summary>
+        void StopAudio() {
+            // if the wave out isn't null
+            if (waveOut != null) {
+                // if the waveout is playing
+                if (waveOut.PlaybackState == PlaybackState.Playing) {
+                    // stop the waveout
+                    waveOut.Stop();
+                }
+            }
+        }
+
+        /// <summary>
+        /// function to make the audio pause
+        /// </summary>
+        void PauseAudio() {
+            // if the wave out isn't null
+            if (waveOut != null) {
+                // if the waveout is playing
+                if (waveOut.PlaybackState == PlaybackState.Playing) {
+                    // stop the waveout
+                    waveOut.Pause();
+                }
+            }
+        }
         #endregion
 
         #region WAVE TYPES
@@ -456,6 +521,76 @@ namespace TinkeringAudio {
             // play the wave out
             waveOut.Play();
         }
+
+        /// <summary>
+        /// function to control when the load audio file button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_LoadAudioFile_Click(object sender, EventArgs e) {
+            // load the wave as bytes
+            loadedWaveByte = audioFileIO.LoadAudioClip();
+
+            // if the loaded wave isnt null then convert the wave to a List<int> (as the other manipulation functions require this)
+            if (loadedWaveByte != null) {
+                loadedWaveInt = ConvertToListInt(loadedWaveByte);
+
+                // create the wave provider using the loaded wave
+                waveProvider = convertToWaveProvider16(loadedWaveInt, sampleRate, channelCount);
+
+                // create a new wave out
+                waveOut = new WaveOut();
+
+                // initialize the wave out using the wave provider
+                waveOut.Init(waveProvider);
+            }
+
+            // write to the console the channel count and sample rate
+            Console.WriteLine("Channel Count: {0}, Sample Rate: {1}", channelCount, sampleRate);
+        }
+
+        /// <summary>
+        /// function to cotnrol when the save audio button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_SaveAudioFile_Click(object sender, EventArgs e) {
+            // create the wave provider using the loaded wave
+            waveProvider = convertToWaveProvider16(loadedWaveInt, sampleRate, channelCount);
+
+            // if the wave provider isn't null
+            if (waveProvider != null) {
+                // save the audio clip using the wave provider
+                audioFileIO.SaveAudioClip(waveProvider);
+            }
+        }
+
+        /// <summary>
+        /// function to control when the play button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_PlayAudio_Click(object sender, EventArgs e) {
+            PlayAudio();
+        }
+
+        /// <summary>
+        /// function to handle when the stop button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_StopAudio_Click(object sender, EventArgs e) {
+            StopAudio();
+        }
+
+        /// <summary>
+        /// function to handle when the pause button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_PauseAudio_Click(object sender, EventArgs e) {
+            PauseAudio();
+        }
         #endregion
 
         #region AMBIENCE BUTTONS
@@ -496,21 +631,45 @@ namespace TinkeringAudio {
 
         }
         #endregion
+    }
 
-        private void btn_LoadAudioFile_Click(object sender, EventArgs e) {
-            loadedWaveByte = audioFileIO.LoadAudioClip();
-            if (loadedWaveByte != null) {
+    /// <summary>
+    /// class to handle known exceptions for the form
+    /// </summary>
+    public class TinkeringAudioExceptionHandler {
+        public enum ExceptionType {
+            AudioImportError,
+            UndefinedError,
+            NoAudioLoaded
+        }
 
+        #region EXCEPTION HANDLER
+        public static void ExceptionHandler(string caption, ExceptionType exception) {
+            string message = "Error: The program has run into a probelm";
+
+            // test conditions of the exception
+            switch (exception) {
+                // if the exception is unknown
+                case ExceptionType.UndefinedError:
+                    // do nothing - check first because most likely
+                    break;
+                // if the exception is an audio import error
+                case ExceptionType.AudioImportError:
+                    // set the message of the message box
+                    message = "Error: Expected Format Exception\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
+                    break;
+                case ExceptionType.NoAudioLoaded:
+                    message = "Error: Argument Null Exception\n\nThere is no file loaded. Please load a file first!";
+                    break;
             }
 
-            Console.WriteLine("Channel Count: {0}, Sample Rate: {1}", channelCount, sampleRate);
-        }
+            // set the message box to have only the ok button shown
+            MessageBoxButtons buttons = MessageBoxButtons.OK;
 
-        private void btn_SaveAudioFile_Click(object sender, EventArgs e) {
-            waveProvider = convertToWaveProvider16(GenerateRandomMelody(12), sampleRate, 1);
-
-            audioFileIO.SaveAudioClip(waveProvider);
+            // show the message box with the above details
+            MessageBox.Show(message, caption, buttons);
         }
+        #endregion
     }
 
     /// <summary>
@@ -570,38 +729,24 @@ namespace TinkeringAudio {
 
                     // create a buffer to store the bytes
                     buffer = new byte[waveFileReader.Length];
+                    
+                    waveProvider.Read(buffer, 0, buffer.Length);
 
                     // return the loaded audio clip as a byte array
                     return buffer;
                 }
                 // if there is a format exception
-                catch (FormatException) {
-                    // set the message of the message box
-                    string message = "Error: Expected Format Exception\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
-                    // set the caption of the message box
-                    string caption = "xpected Format Exception: Audio Import Error";
-
-                    // set the message box to have only the ok button shown
-                    MessageBoxButtons buttons = MessageBoxButtons.OK;
-
-                    // show the message box with the above details
-                    MessageBox.Show(message, caption, buttons);
+                catch (FormatException e) {
+                    // call the exception handler to deal with the exception
+                    TinkeringAudioExceptionHandler.ExceptionHandler("Expected Format Exception: Audio Import Error", TinkeringAudioExceptionHandler.ExceptionType.AudioImportError);
 
                     // call the function again
                     LoadAudioClip();
                 }
                 // if there is an undisclosed error
                 catch {
-                    // set the message of the message box
-                    string message = "Error: The program has run into a probelm";
-                    // set the caption of the message box
-                    string caption = "Audio Import Error";
-
-                    // set the message box to have only the ok button shown
-                    MessageBoxButtons buttons = MessageBoxButtons.OK;
-
-                    // show the message box with the above details
-                    MessageBox.Show(message, caption, buttons);
+                    // call the exception handler to deal with the exception
+                    TinkeringAudioExceptionHandler.ExceptionHandler("Exception: Undefined Error - Audio Import", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
 
                     // call the function again
                     LoadAudioClip();
@@ -609,7 +754,7 @@ namespace TinkeringAudio {
             }
 
             // return the loaded audio clip as null - in the event the dialog closes instead
-            return buffer;
+            return null;
         }
 
         /// <summary>
@@ -629,6 +774,9 @@ namespace TinkeringAudio {
         #endregion
     }
 
+    /// <summary>
+    /// class for handling the audio manipulation
+    /// </summary>
     public class AudioManipulation {
         public AudioManipulation(TinkeringAudioForm sender) {
             m_sender = sender;
