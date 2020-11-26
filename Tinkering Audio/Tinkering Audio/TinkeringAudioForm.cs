@@ -62,6 +62,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio;
 using NAudio.Wave;
+using NAudio.MediaFoundation;
+using NAudio.Utils;
 
 namespace TinkeringAudio {
     public partial class TinkeringAudioForm : Form {
@@ -627,8 +629,6 @@ namespace TinkeringAudio {
             // load sound file first
             // tone combine white noise over audio sample
             // tone combine echo with edited audio sample
-
-
         }
         #endregion
     }
@@ -699,9 +699,8 @@ namespace TinkeringAudio {
                 // set the initial directory to be the C drive
                 InitialDirectory = "C:\\",
                 // add some filters to the dialog
-                Filter = "Supported audio files (*.asf, *.wma, *.wmv, *.aac, *.adts, *.mp3, *.wav)|*.asf;*.wma;*.wmv;*.aac;*.adts;*.mp3;*.wav|" // supported file type
-                    +
-                    "All files (*.*)|*.*", // all files
+                Filter = "Supported audio files (*.aac, *.mp3, *.wav, *.wma)|*.aac;*.mp3;*.wav;*.wma|" // supported file type
+                    + "All files (*.*)|*.*", // all files
                 FilterIndex = 1, // start the filter index at 1 (supported files)
                 RestoreDirectory = true, // enable restoring directory when the dialog is closed
                 Title = "Load an audio file..." // change the title to something more fitting
@@ -762,15 +761,68 @@ namespace TinkeringAudio {
         /// </summary>
         /// <param name="waveProvider">the wave provider to save to</param>
         public void SaveAudioClip(IWaveProvider waveProvider) {
-            // get the file name
-            string filename = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
+            // initialize a new SaveFileDialog to export the audio files
+            SaveFileDialog SFDialog = new SaveFileDialog {
+                InitialDirectory = "C:\\",              // set the starting directory to the C drive
+                // create a filter
+                Filter = "Advanced Audio Coding file (*.aac)|*.aac" // Advanced Audio Coding file saving
+                + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
+                + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
+                + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
+                // start the filter at wav files (common format)
+                FilterIndex = 4,
+                // set the title
+                Title = "Export audio..."
+            };
+            // show the dialog
+            if (SFDialog.ShowDialog() == DialogResult.OK) {
+                if (SFDialog.FileName != "") {
+                    string filename = SFDialog.FileName;
+                    Console.WriteLine(filename);
 
-            // sve the wave to a file
-            WaveFileWriter.CreateWaveFile(filename, waveProvider);
+                    WaveFormat waveFormat = waveProvider.WaveFormat;
+                    
+                    int bitrate = 192000;
+                    var outFormat = new WaveFormat(bitrate, waveFormat.Channels);
+                    MediaType mediaType = null;
 
-            // write to the console the name of the file
-            Console.WriteLine(filename);
+                    switch (SFDialog.FilterIndex) {
+                        // aac files
+                        case 1:
+                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_AAC, waveFormat, bitrate);
+                            break;
+                        // mp3 files
+                        case 2:
+                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, waveFormat, bitrate);
+                            break;
+                        // wav files
+                        case 3:
+                            WaveFileWriter.CreateWaveFile(filename, waveProvider);
+                            break;
+                        // wma files
+                        case 4:
+                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_WMAudioV9, waveFormat, bitrate);
+                            break;
+                    }
+                    if (mediaType != null) {
+                        using (var resampler = new MediaFoundationResampler(waveProvider, outFormat)) {
+                            using (var encoder = new MediaFoundationEncoder(mediaType)) {
+                                encoder.Encode(filename, waveProvider);
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+            //// get the file name
+            //string filename = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
+
+            //// sve the wave to a file
+            //WaveFileWriter.CreateWaveFile(filename, waveProvider);
+
+            //// write to the console the name of the file
+            //Console.WriteLine(filename);
         #endregion
     }
 
