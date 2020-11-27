@@ -35,6 +35,8 @@
             this.btn_PauseAudio = new System.Windows.Forms.Button();
             this.cbox_WaveType = new System.Windows.Forms.ComboBox();
             this.waveTypeBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.cbox_Bitrate = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.waveTypeBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,9 +82,9 @@
             // 
             // btn_LoadAudioFile
             // 
-            this.btn_LoadAudioFile.Location = new System.Drawing.Point(261, 12);
+            this.btn_LoadAudioFile.Location = new System.Drawing.Point(12, 365);
             this.btn_LoadAudioFile.Name = "btn_LoadAudioFile";
-            this.btn_LoadAudioFile.Size = new System.Drawing.Size(265, 23);
+            this.btn_LoadAudioFile.Size = new System.Drawing.Size(239, 23);
             this.btn_LoadAudioFile.TabIndex = 7;
             this.btn_LoadAudioFile.Text = "Load File";
             this.btn_LoadAudioFile.UseVisualStyleBackColor = true;
@@ -90,9 +92,9 @@
             // 
             // btn_SaveAudioFile
             // 
-            this.btn_SaveAudioFile.Location = new System.Drawing.Point(261, 395);
+            this.btn_SaveAudioFile.Location = new System.Drawing.Point(538, 365);
             this.btn_SaveAudioFile.Name = "btn_SaveAudioFile";
-            this.btn_SaveAudioFile.Size = new System.Drawing.Size(265, 23);
+            this.btn_SaveAudioFile.Size = new System.Drawing.Size(250, 23);
             this.btn_SaveAudioFile.TabIndex = 8;
             this.btn_SaveAudioFile.Text = "Save File";
             this.btn_SaveAudioFile.UseVisualStyleBackColor = true;
@@ -100,7 +102,7 @@
             // 
             // btn_PlayAudio
             // 
-            this.btn_PlayAudio.Location = new System.Drawing.Point(261, 366);
+            this.btn_PlayAudio.Location = new System.Drawing.Point(260, 12);
             this.btn_PlayAudio.Name = "btn_PlayAudio";
             this.btn_PlayAudio.Size = new System.Drawing.Size(84, 23);
             this.btn_PlayAudio.TabIndex = 9;
@@ -110,7 +112,7 @@
             // 
             // btn_StopAudio
             // 
-            this.btn_StopAudio.Location = new System.Drawing.Point(442, 366);
+            this.btn_StopAudio.Location = new System.Drawing.Point(441, 12);
             this.btn_StopAudio.Name = "btn_StopAudio";
             this.btn_StopAudio.Size = new System.Drawing.Size(84, 23);
             this.btn_StopAudio.TabIndex = 10;
@@ -120,7 +122,7 @@
             // 
             // btn_PauseAudio
             // 
-            this.btn_PauseAudio.Location = new System.Drawing.Point(352, 366);
+            this.btn_PauseAudio.Location = new System.Drawing.Point(350, 12);
             this.btn_PauseAudio.Name = "btn_PauseAudio";
             this.btn_PauseAudio.Size = new System.Drawing.Size(84, 23);
             this.btn_PauseAudio.TabIndex = 11;
@@ -130,8 +132,9 @@
             // 
             // cbox_WaveType
             // 
+            this.cbox_WaveType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbox_WaveType.FormattingEnabled = true;
-            this.cbox_WaveType.Location = new System.Drawing.Point(261, 41);
+            this.cbox_WaveType.Location = new System.Drawing.Point(260, 41);
             this.cbox_WaveType.Name = "cbox_WaveType";
             this.cbox_WaveType.Size = new System.Drawing.Size(265, 21);
             this.cbox_WaveType.TabIndex = 12;
@@ -141,11 +144,32 @@
             // 
             this.waveTypeBindingSource.DataSource = typeof(TinkeringAudio.TinkeringAudioForm.WaveType);
             // 
+            // cbox_Bitrate
+            // 
+            this.cbox_Bitrate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbox_Bitrate.FormattingEnabled = true;
+            this.cbox_Bitrate.Location = new System.Drawing.Point(538, 417);
+            this.cbox_Bitrate.Name = "cbox_Bitrate";
+            this.cbox_Bitrate.Size = new System.Drawing.Size(250, 21);
+            this.cbox_Bitrate.TabIndex = 13;
+            this.cbox_Bitrate.SelectedIndexChanged += new System.EventHandler(this.cbox_Bitrate_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(538, 391);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(250, 23);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Saving Bitrate";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // TinkeringAudioForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cbox_Bitrate);
             this.Controls.Add(this.cbox_WaveType);
             this.Controls.Add(this.btn_PauseAudio);
             this.Controls.Add(this.btn_StopAudio);
@@ -176,6 +200,8 @@
         private System.Windows.Forms.Button btn_PauseAudio;
         private System.Windows.Forms.ComboBox cbox_WaveType;
         private System.Windows.Forms.BindingSource waveTypeBindingSource;
+        private System.Windows.Forms.ComboBox cbox_Bitrate;
+        private System.Windows.Forms.Label label1;
     }
 }
 

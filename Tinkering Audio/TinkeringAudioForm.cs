@@ -49,6 +49,7 @@
 //***************************************************************************\\
 #endregion
 
+// the usings for the program
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,9 +66,17 @@ using NAudio.Wave;
 using NAudio.MediaFoundation;
 using NAudio.Utils;
 
+
+/// <summary>
+/// the namespace which stores all the code for the tinkering audio project
+/// </summary>
 namespace TinkeringAudio {
+    /// <summary>
+    /// the form class itself
+    /// </summary>
     public partial class TinkeringAudioForm : Form {
 
+        // the different types of wave that can be used to generate audio
         public enum WaveType {
             SquareWave,
             SineWave,
@@ -75,10 +84,23 @@ namespace TinkeringAudio {
             SawtoothWave
         }
 
+        // the differently supported bitrates
+        public enum Bitrates {
+            kbit32 = 32000,
+            kbit96 = 96000,
+            kbit128 = 128000,
+            kbit160 = 160000,
+            kbit192 = 192000,
+            kbit256 = 256000,
+            kbit320 = 320000
+        }
+
+
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second
         public int sampleRate = 44100;
 
+        // the number of channels the audio has
         public int channelCount = 1;
 
         // 2 to power of 15 is 32768 - the maximum value we want
@@ -108,6 +130,9 @@ namespace TinkeringAudio {
         // information to store the loaded wave
         private byte[] loadedWaveByte;
         private List<int> loadedWaveInt;
+
+        // save information
+        private Bitrates save_bitrate = Bitrates.kbit192;
         #endregion
 
         #region FORM INITIALISATION AND LOADS
@@ -115,10 +140,10 @@ namespace TinkeringAudio {
         public TinkeringAudioForm() {
             InitializeComponent();
 
-            // create a new audio file io directing to this script as the sender
+            // create a new audio file io directing to this class instance as the sender
             audioFileIO = new AudioFileIO(sender: this);
 
-            // create a new audio manipulation directing to this script as the sender
+            // create a new audio manipulation directing to this class instance as the sender
             audioManipulation = new AudioManipulation(sender: this);
         }
 
@@ -133,7 +158,22 @@ namespace TinkeringAudio {
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
 
-            cbox_WaveType.DataSource = Enum.GetValues(typeof(WaveType));            
+            // set the data source for the wave type
+            cbox_WaveType.DataSource = Enum.GetValues(typeof(WaveType));
+
+            // get the values from the Bitrates enum
+            int[] int_bitrates = (int[])Enum.GetValues(typeof(Bitrates));
+
+            // create a new list of strings
+            List<string> bitrates = new List<string>();
+
+            // for all of teh bitrates, add an element to display in Kbits/s
+            foreach (int i in int_bitrates) {
+                bitrates.Add((i / 1000).ToString() + " Kbits/s");
+            }
+
+            // set the data source as strings
+            cbox_Bitrate.DataSource = bitrates;
         }
         #endregion
 
@@ -254,7 +294,6 @@ namespace TinkeringAudio {
         #endregion
 
         #region WAVE FUNCTIONS
-
         /// <summary>
         /// get a random element from an array
         /// </summary>
@@ -349,6 +388,7 @@ namespace TinkeringAudio {
                 TinkeringAudioExceptionHandler.ExceptionHandler(ex.ToString(), TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
             }
 
+            // return nothing
             return null;
         }
 
@@ -358,24 +398,31 @@ namespace TinkeringAudio {
         /// <param name="waveByte">the byte list of the wave</param>
         /// <returns></returns>
         private List<int> ConvertToListInt(byte[] waveByte) {
+            // calculate the length of the wave @ 16 bits
             int waveLength = waveByte.Length / 2;
 
+            // create a new int list to store the wave
             List<int> wave = new List<int>();
 
+            // set the byte array index to 0
             int byteArrayIndex = 0;
 
+            // create a new value for the bytes to be stored
             byte[] value = new byte[2];
 
+            // run through the length of the int wave
             for (int i = 0; i < waveLength; i++) {
+                // set values 0 and 1 based off the byte values
                 value[0] = waveByte[byteArrayIndex++];
                 value[1] = waveByte[byteArrayIndex++];
 
+                // convert the value to 16 bit int and add that to the wave
                 wave.Add(BitConverter.ToInt16(value, 0));
             }
 
+            // return the new wave as an int list
             return wave;
         }
-
         #endregion
 
         #region AUDIO PLAYBACK
@@ -383,9 +430,13 @@ namespace TinkeringAudio {
         /// function to make the audio play
         /// </summary>
         void PlayAudio() {
+            // if the wave out is set to null
             if (waveOut == null) {
+                // display a box to the user
                 TinkeringAudioExceptionHandler.ExceptionHandler("Null Reference Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded_Playback);
-            } else {
+            }
+            // if the wave out is not null
+            else {
                 // play the sound
                 waveOut.Play();
             }
@@ -421,27 +472,39 @@ namespace TinkeringAudio {
         #endregion
 
         #region WAVE TYPES
-
+        /// <summary>
+        /// function to set the wave type
+        /// </summary>
+        /// <param name="waveType">the wavetype as an enum (which can be indexed by the dropdown)</param>
+        /// <returns>the new wave</returns>
         WaveFunction SetWaveFunction(WaveType waveType) {
+            // delcare a new member wave function
             WaveFunction m_waveFunction = null;
 
+            // switch the wave type
             switch(waveType) {
+                // if square wave, set to square wave
                 case WaveType.SquareWave:
                     m_waveFunction = SquareWave;
                     break;
+                // if sine wave, set to sine wave
                 case WaveType.SineWave:
                     m_waveFunction = SineWave;
                     break;
+                // if triangle wave, set to triangle wave
                 case WaveType.TriangleWave:
                     m_waveFunction = TriangleWave;
                     break;
+                // if sawtooth wave, set to sawtooth wave
                 case WaveType.SawtoothWave:
                     m_waveFunction = SawtoothWave;
                     break;
             }
 
+            // write to the console which wave has been chosen
             Console.WriteLine("Wave type changed to: {0}", waveType.ToString());
 
+            // return the member wave function
             return m_waveFunction;
         }
 
@@ -597,7 +660,7 @@ namespace TinkeringAudio {
             // if the wave provider isn't null
             if (waveProvider != null) {
                 // save the audio clip using the wave provider
-                audioFileIO.SaveAudioClip(waveProvider);
+                audioFileIO.SaveAudioClip(waveProvider, (int)save_bitrate);
             }
         }
 
@@ -607,6 +670,7 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btn_PlayAudio_Click(object sender, EventArgs e) {
+            // play the audio
             PlayAudio();
         }
 
@@ -616,6 +680,7 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btn_StopAudio_Click(object sender, EventArgs e) {
+            // stop the audio
             StopAudio();
         }
 
@@ -625,17 +690,28 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btn_PauseAudio_Click(object sender, EventArgs e) {
+            // pause the audio
             PauseAudio();
         }
         #endregion
 
         #region AMBIENCE BUTTONS
+        /// <summary>
+        /// function to handle when the Village button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Villagebtn_Click(object sender, EventArgs e) {
             // load sound file first
             // tone combine happy beat with birds/insects
             // normalize sound file
         }
 
+        /// <summary>
+        /// function to handle when the Forest button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Forestbtn_Click(object sender, EventArgs e) {
             // load sound file first
             // audio splice bird and insect sound
@@ -645,6 +721,11 @@ namespace TinkeringAudio {
             // then finally normalize it to ensure that one spliced audio is louder than the other
         }
 
+        /// <summary>
+        /// function to handle when the Cave button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cavebtn_Click(object sender, EventArgs e) {
             // load sound file first
             // tone combine white noise over audio sample
@@ -652,6 +733,11 @@ namespace TinkeringAudio {
             // normalize final editied audio sample
         }
 
+        /// <summary>
+        /// function to handle when the Ocean button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
 
             Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
@@ -666,9 +752,28 @@ namespace TinkeringAudio {
         }
         #endregion
 
+        /// <summary>
+        /// function to handle when the wave type dropdown gets changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cbox_WaveType_SelectedIndexChanged(object sender, EventArgs e) {
+            // cast the waveType from int to enum
             WaveType waveType = (WaveType)cbox_WaveType.SelectedIndex;
+            // set the wave function
             waveFunction = SetWaveFunction(waveType);
+        }
+
+        /// <summary>
+        /// function to handle when the bitrate is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbox_Bitrate_SelectedIndexChanged(object sender, EventArgs e) {
+            // create an int array of bitrates based off the enum
+            int[] bitrates = (int[])Enum.GetValues(typeof(Bitrates));
+            // set the save bitrate based off the cbox_Bitrate value
+            save_bitrate = (Bitrates)bitrates[cbox_Bitrate.SelectedIndex];
         }
     }
 
@@ -677,14 +782,20 @@ namespace TinkeringAudio {
     /// </summary>
     public class TinkeringAudioExceptionHandler {
 
+        // enum for the types of exception
         public enum ExceptionType {
-            AudioImportError,
-            UndefinedError,
-            NoAudioLoaded,
-            NoAudioLoaded_Playback
+            AudioImportError,       // audio import error - for when an error occurs when trying to load audio files
+            UndefinedError,         // undefined error - for when an error isn't explicitly checked for
+            NoAudioLoaded,          // no audio loaded - for when the save button is pressed
+            NoAudioLoaded_Playback  // no audio loaded - for when the playback buttons are pressed
         }
 
         #region EXCEPTION HANDLER
+        /// <summary>
+        /// function to handle exception
+        /// </summary>
+        /// <param name="caption"></param>
+        /// <param name="exception"></param>
         public static void ExceptionHandler(string caption, ExceptionType exception) {
             string message = caption + ": The program has run into a problem.";
 
@@ -699,11 +810,15 @@ namespace TinkeringAudio {
                     // set the message of the message box
                     message = "Error: Expected Format Exception.\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
                     break;
+                // if the exception is a no audio loaded error
                 case ExceptionType.NoAudioLoaded:
-                    message = "Error: Argument Null Exception.\n\nThere is no file loaded. Please load a file first!";
+                    // set the message of the message box
+                    message = "Error: Argument Null Exception.\n\nSaving not possible, there is no audio file loaded. Please load an audio file first!";
                     break;
+                // if the exception is a no audio loaded for playback error
                 case ExceptionType.NoAudioLoaded_Playback:
-                    message = "Error: Null Reference Exception.\n\nThere is no file loaded. Please load a file first!";
+                    // set the message of the message box
+                    message = "Error: No Audio Loaded for Playback.\n\nPlayback not possible, there is no file loaded. Please load an audio file first!";
                     break;
             }
 
@@ -721,7 +836,18 @@ namespace TinkeringAudio {
     /// </summary>
     public class AudioFileIO {
 
-        // how the AudioFileIO should be initialised
+        // an enum to store the different file types
+        enum AudioFileFormat {
+            AAC,    // Advanced Audio Coding
+            MP3,    // MPEG Audio Layer-3
+            WAV,    // Waveform Audio File Format
+            WMA     // Windows Media Audio
+        }
+
+        /// <summary>
+        /// how the AudioFileIO should be initialised
+        /// </summary>
+        /// <param name="sender">the main form class itself</param>
         public AudioFileIO(TinkeringAudioForm sender) {
             // the sender object so that it's values can be manipulated
             m_sender = sender;
@@ -748,7 +874,7 @@ namespace TinkeringAudio {
                 + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
                 + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
                 + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
-                FilterIndex = 1, // start the filter index at 1 (supported files)
+                FilterIndex = 1, // start the filter index at 1 (all files)
                 RestoreDirectory = true, // enable restoring directory when the dialog is closed
                 Title = "Load an audio file..." // change the title to something more fitting
             };
@@ -760,17 +886,21 @@ namespace TinkeringAudio {
                     // set the path to the file name
                     string path = OFDialog.FileName;
 
+                    // declare a new sample and wave provider as null
                     ISampleProvider sampleProvider = null;
                     IWaveProvider waveProvider = null;
 
+                    // using a MediaFoundationReader at the path
                     using (var decoder = new MediaFoundationReader(path)) {
+                        // set the sample and wave providers
                         sampleProvider = decoder.ToSampleProvider();
                         waveProvider = sampleProvider.ToWaveProvider16();
 
-                        // create a buffer to store the bytes
+                        // create a buffer with the decoder length
                         buffer = new byte[decoder.Length];
                     }
 
+                    // create a new waveformat using the waveprovider
                     WaveFormat waveFormat = waveProvider.WaveFormat;
 
                     // create a new file reader for the file
@@ -780,9 +910,11 @@ namespace TinkeringAudio {
                     int sampleRate = waveFormat.SampleRate;
                     int channelCount = waveFormat.Channels;
 
+                    // set the main class's sample rate and channel count
                     m_sender.sampleRate = sampleRate;
                     m_sender.channelCount = channelCount;
                     
+                    // read the bytes from the wave provider and store it in the buffer
                     waveProvider.Read(buffer, 0, buffer.Length);
 
                     // return the loaded audio clip as a byte array
@@ -796,10 +928,10 @@ namespace TinkeringAudio {
                     // call the function again
                     LoadAudioClip();
                 }
-                // if there is an undisclosed error
-                catch {
+                // if there is an undefined error
+                catch (Exception ex) {
                     // call the exception handler to deal with the exception
-                    TinkeringAudioExceptionHandler.ExceptionHandler("Exception: Undefined Error - Audio Import", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
+                    TinkeringAudioExceptionHandler.ExceptionHandler("Exception: " + ex.ToString() + " - Audio Import", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
 
                     // call the function again
                     LoadAudioClip();
@@ -814,7 +946,7 @@ namespace TinkeringAudio {
         /// save the audio clip to a file
         /// </summary>
         /// <param name="waveProvider">the wave provider to save to</param>
-        public void SaveAudioClip(IWaveProvider waveProvider) {
+        public void SaveAudioClip(IWaveProvider waveProvider, int bitrate) {
             // initialize a new SaveFileDialog to export the audio files
             SaveFileDialog SFDialog = new SaveFileDialog {
                 InitialDirectory = "C:\\",              // set the starting directory to the C drive
@@ -831,36 +963,46 @@ namespace TinkeringAudio {
             // show the dialog
             if (SFDialog.ShowDialog() == DialogResult.OK) {
                 if (SFDialog.FileName != "") {
+                    // set the file name based off the the directory of the SaveFileDialog
                     string filename = SFDialog.FileName;
-                    Console.WriteLine(filename);
 
+                    // create a wave format from the waveprovider passed as a parameter
                     WaveFormat waveFormat = waveProvider.WaveFormat;
-                    
-                    int bitrate = 192000;
+
+                    // create a new format for the wave
                     var outFormat = new WaveFormat(bitrate, waveFormat.Channels);
+                    // declare the media type
                     MediaType mediaType = null;
 
-                    switch (SFDialog.FilterIndex) {
-                        // aac files
-                        case 1:
+                    // check the options in the filter index
+                    switch ((AudioFileFormat)SFDialog.FilterIndex) {
+                        // if an aac file is chosen to be saved
+                        case AudioFileFormat.AAC:
+                            // set the media type to the AAC encoding
                             mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_AAC, waveFormat, bitrate);
                             break;
-                        // mp3 files
-                        case 2:
+                        // if an mp3 file is chosen to be saved
+                        case AudioFileFormat.MP3:
+                            // set the media type to the MP3 encoding
                             mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, waveFormat, bitrate);
                             break;
-                        // wav files
-                        case 3:
+                        // if a wav file is chosen to be saved
+                        case AudioFileFormat.WAV:
                             WaveFileWriter.CreateWaveFile(filename, waveProvider);
                             break;
-                        // wma files
-                        case 4:
+                        // if a wma file is chosen to be saved
+                        case AudioFileFormat.WMA:
+                            // set the media type to the WMA encoding
                             mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_WMAudioV9, waveFormat, bitrate);
                             break;
                     }
+                    // if the media type has been set (
                     if (mediaType != null) {
+                        // create a new resampler to resample to wave provider to the out format
                         using (var resampler = new MediaFoundationResampler(waveProvider, outFormat)) {
+                            // create a new encoder
                             using (var encoder = new MediaFoundationEncoder(mediaType)) {
+                                // save the file with the envoding
                                 encoder.Encode(filename, waveProvider);
                             }
                         }
@@ -868,15 +1010,6 @@ namespace TinkeringAudio {
                 }
             }
         }
-
-            //// get the file name
-            //string filename = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
-
-            //// sve the wave to a file
-            //WaveFileWriter.CreateWaveFile(filename, waveProvider);
-
-            //// write to the console the name of the file
-            //Console.WriteLine(filename);
         #endregion
     }
 
@@ -884,14 +1017,18 @@ namespace TinkeringAudio {
     /// class for handling the audio manipulation
     /// </summary>
     public class AudioManipulation {
+        /// <summary>
+        /// how to audio manipulation should be initialised
+        /// </summary>
+        /// <param name="sender">the main form class itself</param>
         public AudioManipulation(TinkeringAudioForm sender) {
             m_sender = sender;
         }
-
+        
+        // declare the member sender for the initial form
         TinkeringAudioForm m_sender;
 
         #region AUDIO_ALGORITHIMS
-
         #region AudioSplicing
         /// <summary>
         /// function to generate a list of ints which splices two audio segments together
@@ -1152,7 +1289,6 @@ namespace TinkeringAudio {
             return WhiteList;
         }
         #endregion
-
         #endregion
     }
 }
