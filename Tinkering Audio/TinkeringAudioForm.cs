@@ -61,11 +61,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Resources;
 using NAudio;
 using NAudio.Wave;
 using NAudio.MediaFoundation;
 using NAudio.Utils;
-
 
 /// <summary>
 /// the namespace which stores all the code for the tinkering audio project
@@ -94,7 +94,6 @@ namespace TinkeringAudio {
             kbit256 = 256000,
             kbit320 = 320000
         }
-
 
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second
@@ -740,7 +739,7 @@ namespace TinkeringAudio {
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
 
-            Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
+            //Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
 
             List<double> whiteNoise = audioManipulation.WhiteNoise(2, 0.4);
             // List<double> echoNoise = AddingEchos(windAudio, 3);
@@ -752,6 +751,7 @@ namespace TinkeringAudio {
         }
         #endregion
 
+        #region COMBO BOX FUNCTIONS
         /// <summary>
         /// function to handle when the wave type dropdown gets changed
         /// </summary>
@@ -775,6 +775,7 @@ namespace TinkeringAudio {
             // set the save bitrate based off the cbox_Bitrate value
             save_bitrate = (Bitrates)bitrates[cbox_Bitrate.SelectedIndex];
         }
+        #endregion
     }
 
     /// <summary>
@@ -838,6 +839,7 @@ namespace TinkeringAudio {
 
         // an enum to store the different file types
         enum AudioFileFormat {
+            None,   // No file format given
             AAC,    // Advanced Audio Coding
             MP3,    // MPEG Audio Layer-3
             WAV,    // Waveform Audio File Format
@@ -866,8 +868,8 @@ namespace TinkeringAudio {
             byte[] buffer = null;
             // create a new file dialog (pop up window to browse windows explorer)
             OpenFileDialog OFDialog = new OpenFileDialog {
-                // set the initial directory to be the C drive
-                InitialDirectory = "C:\\",
+                // set the starting directory to the music folder
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
                 // create a filter
                 Filter = "All files (*.*)|*.*"                      // all files
                 + "|Advanced Audio Coding file (*.aac)|*.aac"       // Advanced Audio Coding file saving
@@ -949,14 +951,15 @@ namespace TinkeringAudio {
         public void SaveAudioClip(IWaveProvider waveProvider, int bitrate) {
             // initialize a new SaveFileDialog to export the audio files
             SaveFileDialog SFDialog = new SaveFileDialog {
-                InitialDirectory = "C:\\",              // set the starting directory to the C drive
+                // set the starting directory to the music folder
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
                 // create a filter
                 Filter = "Advanced Audio Coding file (*.aac)|*.aac" // Advanced Audio Coding file saving
                 + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
                 + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
                 + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
                 // start the filter at wav files (common format)
-                FilterIndex = 4,
+                FilterIndex = 3,
                 // set the title
                 Title = "Export audio..."
             };
@@ -996,7 +999,11 @@ namespace TinkeringAudio {
                             mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_WMAudioV9, waveFormat, bitrate);
                             break;
                     }
-                    // if the media type has been set (
+
+                    Console.WriteLine(SFDialog.FilterIndex);
+                    Console.WriteLine((AudioFileFormat)SFDialog.FilterIndex);
+
+                    // if the media type has been set
                     if (mediaType != null) {
                         // create a new resampler to resample to wave provider to the out format
                         using (var resampler = new MediaFoundationResampler(waveProvider, outFormat)) {

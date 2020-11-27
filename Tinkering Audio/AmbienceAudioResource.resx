@@ -118,22 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ambience_cave_drips___Copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\ambience cave drips - Copy.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Ambience_Cave_Drips" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Ambience Cave Drips.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="AMP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AMP.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Cicada_Sounds___Copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Cicada Sounds - Copy.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Cicadia_Sounds" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Cicadia Sounds.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Lawrie_phone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Lawrie phone.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="water_drip_underground___Copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\water drip underground - Copy.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Water_Drip_Underground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Water Drip Underground.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="wind" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\wind.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="Wind" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Wind.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

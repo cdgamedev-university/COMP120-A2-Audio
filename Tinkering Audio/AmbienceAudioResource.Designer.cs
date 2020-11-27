@@ -22,7 +22,7 @@ namespace Tinkering_Audio {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AmbienceAudioResource {
+    public class AmbienceAudioResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Tinkering_Audio {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tinkering_Audio.AmbienceAudioResource", typeof(AmbienceAudioResource).Assembly);
@@ -51,7 +51,7 @@ namespace Tinkering_Audio {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,16 +63,16 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream ambience_cave_drips___Copy {
+        public static System.IO.UnmanagedMemoryStream Ambience_Cave_Drips {
             get {
-                return ResourceManager.GetStream("ambience_cave_drips___Copy", resourceCulture);
+                return ResourceManager.GetStream("Ambience_Cave_Drips", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream AMP {
+        public static System.IO.UnmanagedMemoryStream AMP {
             get {
                 return ResourceManager.GetStream("AMP", resourceCulture);
             }
@@ -81,16 +81,16 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Cicada_Sounds___Copy {
+        public static System.IO.UnmanagedMemoryStream Cicadia_Sounds {
             get {
-                return ResourceManager.GetStream("Cicada_Sounds___Copy", resourceCulture);
+                return ResourceManager.GetStream("Cicadia_Sounds", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Lawrie_phone {
+        public static System.IO.UnmanagedMemoryStream Lawrie_phone {
             get {
                 return ResourceManager.GetStream("Lawrie_phone", resourceCulture);
             }
@@ -99,18 +99,18 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream water_drip_underground___Copy {
+        public static System.IO.UnmanagedMemoryStream Water_Drip_Underground {
             get {
-                return ResourceManager.GetStream("water_drip_underground___Copy", resourceCulture);
+                return ResourceManager.GetStream("Water_Drip_Underground", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream wind {
+        public static System.IO.UnmanagedMemoryStream Wind {
             get {
-                return ResourceManager.GetStream("wind", resourceCulture);
+                return ResourceManager.GetStream("Wind", resourceCulture);
             }
         }
     }
