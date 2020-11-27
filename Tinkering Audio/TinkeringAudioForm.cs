@@ -97,7 +97,7 @@ namespace TinkeringAudio {
 
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second
-        public int sampleRate = 44100;
+        public int sampleRate = 16000;
 
         // the number of channels the audio has
         public int channelCount = 1;
@@ -468,6 +468,20 @@ namespace TinkeringAudio {
                 }
             }
         }
+
+        void GenerateWaveOut() {
+            if (waveOut != null) {
+                waveOut.Dispose();
+            }
+            // create the wave provider using the loaded wave
+            waveProvider = convertToWaveProvider16(loadedWaveInt, sampleRate, channelCount);
+
+            // create a new wave out
+            waveOut = new WaveOut();
+
+            // initialize the wave out using the wave provider
+            waveOut.Init(waveProvider);
+        }
         #endregion
 
         #region WAVE TYPES
@@ -633,14 +647,7 @@ namespace TinkeringAudio {
             if (loadedWaveByte != null) {
                 loadedWaveInt = ConvertToListInt(loadedWaveByte);
 
-                // create the wave provider using the loaded wave
-                waveProvider = convertToWaveProvider16(loadedWaveInt, sampleRate, channelCount);
-
-                // create a new wave out
-                waveOut = new WaveOut();
-
-                // initialize the wave out using the wave provider
-                waveOut.Init(waveProvider);
+                GenerateWaveOut();
             }
 
             // write to the console the channel count and sample rate
@@ -737,18 +744,24 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
-            
-
             try
             {
+                if (loadedWaveInt == null) {
+                    throw new ArgumentNullException();
+                }
+
                 List<int> whiteNoise = audioManipulation.WhiteNoise(2, 1);
-                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 3);
+                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 5);
                 List<int> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
-                
+
+                loadedWaveInt = twoTones;
+
+                GenerateWaveOut();
+
             }
-            catch(NullReferenceException)
+            catch(ArgumentNullException)
             {
-                TinkeringAudioExceptionHandler.ExceptionHandler("Null Reference Exception: No audio loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
+                TinkeringAudioExceptionHandler.ExceptionHandler("Arugment Null Exception: No audio loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
             }
         }
         #endregion
@@ -1072,7 +1085,6 @@ namespace TinkeringAudio {
         /// <returns>return the sample with its added echo</returns>
         public List<int> AddingEchos(List<int> inputList, int delayInSeconds)
         {
-            Console.WriteLine("[RUNNING]: Add Echoes");
 
             // required: 
             // 1 =< t
@@ -1081,14 +1093,14 @@ namespace TinkeringAudio {
             // there is an input list s, where the input is extended by t seconds
             // combines input list with delayed copy of itself
 
-            // create a new list for the echo
-            List<int> echoList = new List<int>();
-
             // the duration of the echo added to the end
             int echoDuration = delayInSeconds * m_sender.sampleRate;
 
+            // create a new list for the echo
+            List<int> echoList = new List<int>(inputList.Count + echoDuration);
+
             // run through the input and add the echo to the end
-            for (int i = 0; i < (inputList.Count) + echoDuration; i++)
+            for (int i = 0; i < inputList.Count + echoDuration; i++)
             {
                 // set the value to 0
                 int value = 0;
@@ -1107,10 +1119,15 @@ namespace TinkeringAudio {
                     value += inputList[i - echoDuration];
                 }
 
+                if (i % 1000 == 0) {
+                    Console.WriteLine(value);
+                }
+
                 // add the value to the echo list
                 echoList.Add(value);
             }
 
+            Console.WriteLine("[RUNNING]: Add Echoes");
             // return the echo list
             return echoList;
         }
@@ -1151,10 +1168,10 @@ namespace TinkeringAudio {
         /// <summary>
         /// a function to resample a audio sample using a factor, audScale, to scale the audio.
         /// </summary>
-        /// <param name="audSamp"></param>
+        /// <param name="audSample"></param>
         /// <param name="audScale"></param>
         /// <returns>the resampled list</returns>
-        public List<double> Resample(List<double> audSample, double audScale)
+        public List<int> Resample(List<int> audSample, double audScale)
         {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Resample");
@@ -1163,7 +1180,7 @@ namespace TinkeringAudio {
             double modAudioScale = 1.0 / audScale;
 
             //declares list for the resampled sound
-            List<double> resampledList = new List<double>();
+            List<int> resampledList = new List<int>();
 
             // if modified audio scale is greater than 1 then
             if (modAudioScale > 1)
@@ -1172,7 +1189,7 @@ namespace TinkeringAudio {
                 for (int i = 0; i < (audSample.Count); i++)
                 {
                     // declare double value var
-                    double value = 0;
+                    int value = 0;
 
                     // while the statement j is less than modified audio scale is true execute loop
                     for (int j = 0; j < modAudioScale; j++)
@@ -1181,7 +1198,7 @@ namespace TinkeringAudio {
                         value += audSample[i + j];
                     }
                     // value is divided by the modified audio scale
-                    value = value / modAudioScale;
+                    value = (int)(value / modAudioScale);
 
                     // adds value onto the resampled list
                     resampledList.Add(value);
@@ -1270,10 +1287,14 @@ namespace TinkeringAudio {
 
             int sampleDuration = (int)(duration * m_sender.sampleRate);
 
-            sampleDuration = Math.Min(Math.Min(sample0.Count, sample1.Count), sampleDuration);
-
             // while the statement i is less than duration multiplied by the sample rate is true execute loop
             for (int i = 0; i < (sampleDuration); i++) {
+                if (sample0.Count <= i) {
+                    sample0.Add(0);
+                }
+                if (sample1.Count <= i) {
+                    sample1.Add(0);
+                }
                 CombinedList.Add((sample0[i] + sample1[i]) / 2);
             }
             // returns the modifed combined list
@@ -1296,14 +1317,14 @@ namespace TinkeringAudio {
             // declaring new list for the two tones to combine in 
             List<int> WhiteList = new List<int>();
 
+            //create a random variable which generates new random each for loop
+            Random rand = new Random();
+
             // while the statement i is less than time multiplied by the sample rate is true execute loop
             for (int i = 0; i < (time * m_sender.sampleRate); i++)
             {
-                //create a random variable which generates new random each for loop
-                Random rand = new Random();
-
                 // adds a random number between -1 and 1 to the white list
-                WhiteList.Add(rand.Next(-1, 1) * resultantVol);
+                WhiteList.Add(rand.Next(-1, 1) * resultantVol *  m_sender.MAX_VALUE);
             }
             // returns modifed white list to 
             return WhiteList;
