@@ -22,7 +22,7 @@
 // Copyright (c) 2020 Daisy Baker and Hayley Davies                          \\
 // Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk               \\
 //                                                                           \\
-// Any sample audio distributed with this project is Copyright of Otis Hull  \\
+// Most sample audio distributed with this project is Copyright of Otis Hull \\
 // Contact: oh249978@falmouth.ac.uk                                          \\
 //                                                                           \\
 // Licensed under GNU GENERAL PUBLIC LICENSE (the "License")                 \\
@@ -67,6 +67,14 @@ using NAudio.Utils;
 
 namespace TinkeringAudio {
     public partial class TinkeringAudioForm : Form {
+
+        public enum WaveType {
+            SquareWave,
+            SineWave,
+            TriangleWave,
+            SawtoothWave
+        }
+
         #region DECLARING VARIABLES
         // the sample rate is how many samples taken each second
         public int sampleRate = 44100;
@@ -117,13 +125,15 @@ namespace TinkeringAudio {
         // when the form loads
         private void TinkeringAudioForm_Load(object sender, EventArgs e) {
             // set the wave function
-            this.waveFunction = SquareWave;
+            waveFunction = SquareWave;
 
             // populate notes with notes
             notes = PopulateNotes(440, -16, 8, 2);
 
             // set the possible note durations
             noteDuration = new double[] { 0.15, 0.2, 0.3, 0.4 };
+
+            cbox_WaveType.DataSource = Enum.GetValues(typeof(WaveType));            
         }
         #endregion
 
@@ -334,9 +344,9 @@ namespace TinkeringAudio {
             } catch (ArgumentNullException) {
                 // call the exception handler to deal with the exception
                 TinkeringAudioExceptionHandler.ExceptionHandler("Argument Null Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
-            } catch {
+            } catch (Exception ex) {
                 // call the exception handler to deal with the exception
-                TinkeringAudioExceptionHandler.ExceptionHandler("Undefined Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
+                TinkeringAudioExceptionHandler.ExceptionHandler(ex.ToString(), TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
             }
 
             return null;
@@ -373,8 +383,9 @@ namespace TinkeringAudio {
         /// function to make the audio play
         /// </summary>
         void PlayAudio() {
-            // if the wave provider isn't null
-            if (waveProvider != null) {
+            if (waveOut == null) {
+                TinkeringAudioExceptionHandler.ExceptionHandler("Null Reference Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded_Playback);
+            } else {
                 // play the sound
                 waveOut.Play();
             }
@@ -410,6 +421,29 @@ namespace TinkeringAudio {
         #endregion
 
         #region WAVE TYPES
+
+        WaveFunction SetWaveFunction(WaveType waveType) {
+            WaveFunction m_waveFunction = null;
+
+            switch(waveType) {
+                case WaveType.SquareWave:
+                    m_waveFunction = SquareWave;
+                    break;
+                case WaveType.SineWave:
+                    m_waveFunction = SineWave;
+                    break;
+                case WaveType.TriangleWave:
+                    m_waveFunction = TriangleWave;
+                    break;
+                case WaveType.SawtoothWave:
+                    m_waveFunction = SawtoothWave;
+                    break;
+            }
+
+            Console.WriteLine("Wave type changed to: {0}", waveType.ToString());
+
+            return m_waveFunction;
+        }
 
         // this is a wave which amplitude alternates at a freq between fixed min and max values
         /// <summary>
@@ -631,21 +665,28 @@ namespace TinkeringAudio {
             // tone combine echo with edited audio sample
         }
         #endregion
+
+        private void cbox_WaveType_SelectedIndexChanged(object sender, EventArgs e) {
+            WaveType waveType = (WaveType)cbox_WaveType.SelectedIndex;
+            waveFunction = SetWaveFunction(waveType);
+        }
     }
 
     /// <summary>
     /// class to handle known exceptions for the form
     /// </summary>
     public class TinkeringAudioExceptionHandler {
+
         public enum ExceptionType {
             AudioImportError,
             UndefinedError,
-            NoAudioLoaded
+            NoAudioLoaded,
+            NoAudioLoaded_Playback
         }
 
         #region EXCEPTION HANDLER
         public static void ExceptionHandler(string caption, ExceptionType exception) {
-            string message = "Error: The program has run into a probelm";
+            string message = caption + ": The program has run into a problem.";
 
             // test conditions of the exception
             switch (exception) {
@@ -656,10 +697,13 @@ namespace TinkeringAudio {
                 // if the exception is an audio import error
                 case ExceptionType.AudioImportError:
                     // set the message of the message box
-                    message = "Error: Expected Format Exception\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
+                    message = "Error: Expected Format Exception.\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
                     break;
                 case ExceptionType.NoAudioLoaded:
-                    message = "Error: Argument Null Exception\n\nThere is no file loaded. Please load a file first!";
+                    message = "Error: Argument Null Exception.\n\nThere is no file loaded. Please load a file first!";
+                    break;
+                case ExceptionType.NoAudioLoaded_Playback:
+                    message = "Error: Null Reference Exception.\n\nThere is no file loaded. Please load a file first!";
                     break;
             }
 

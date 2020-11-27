@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this.Villagebtn = new System.Windows.Forms.Button();
             this.Forestbtn = new System.Windows.Forms.Button();
             this.Cavebtn = new System.Windows.Forms.Button();
@@ -32,6 +33,9 @@
             this.btn_PlayAudio = new System.Windows.Forms.Button();
             this.btn_StopAudio = new System.Windows.Forms.Button();
             this.btn_PauseAudio = new System.Windows.Forms.Button();
+            this.cbox_WaveType = new System.Windows.Forms.ComboBox();
+            this.waveTypeBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.waveTypeBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // Villagebtn
@@ -124,11 +128,25 @@
             this.btn_PauseAudio.UseVisualStyleBackColor = true;
             this.btn_PauseAudio.Click += new System.EventHandler(this.btn_PauseAudio_Click);
             // 
+            // cbox_WaveType
+            // 
+            this.cbox_WaveType.FormattingEnabled = true;
+            this.cbox_WaveType.Location = new System.Drawing.Point(261, 41);
+            this.cbox_WaveType.Name = "cbox_WaveType";
+            this.cbox_WaveType.Size = new System.Drawing.Size(265, 21);
+            this.cbox_WaveType.TabIndex = 12;
+            this.cbox_WaveType.SelectedIndexChanged += new System.EventHandler(this.cbox_WaveType_SelectedIndexChanged);
+            // 
+            // waveTypeBindingSource
+            // 
+            this.waveTypeBindingSource.DataSource = typeof(TinkeringAudio.TinkeringAudioForm.WaveType);
+            // 
             // TinkeringAudioForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.cbox_WaveType);
             this.Controls.Add(this.btn_PauseAudio);
             this.Controls.Add(this.btn_StopAudio);
             this.Controls.Add(this.btn_PlayAudio);
@@ -141,6 +159,7 @@
             this.Name = "TinkeringAudioForm";
             this.Text = "Tinkering Audio";
             this.Load += new System.EventHandler(this.TinkeringAudioForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.waveTypeBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -155,6 +174,8 @@
         private System.Windows.Forms.Button btn_PlayAudio;
         private System.Windows.Forms.Button btn_StopAudio;
         private System.Windows.Forms.Button btn_PauseAudio;
+        private System.Windows.Forms.ComboBox cbox_WaveType;
+        private System.Windows.Forms.BindingSource waveTypeBindingSource;
     }
 }
 

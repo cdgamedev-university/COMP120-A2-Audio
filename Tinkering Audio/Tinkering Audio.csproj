@@ -110,5 +110,8 @@
   <ItemGroup>
     <None Include="Resources\water drip underground - Copy.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
