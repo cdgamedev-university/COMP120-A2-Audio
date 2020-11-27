@@ -713,9 +713,8 @@ namespace TinkeringAudio {
         /// <param name="e"></param>
         private void Forestbtn_Click(object sender, EventArgs e) {
             // load sound file first
-            // audio splice bird and insect sound
-            // tone combine wind sound with audio spliced bird + insect sound
-            // tone combine wind/bird/insect with loaded audio sound file
+            // tone combine wind sound with audio insect sound
+            // tone combine wind/insect with loaded audio sound file
             // scale amplitude up slightly on edited spliced audio
             // then finally normalize it to ensure that one spliced audio is louder than the other
         }
@@ -742,8 +741,8 @@ namespace TinkeringAudio {
             //Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
 
             List<double> whiteNoise = audioManipulation.WhiteNoise(2, 0.4);
-            // List<double> echoNoise = AddingEchos(windAudio, 3);
-            //List<double> twoTones = twoTones.add(whiteNoise, audioManipulation.echoNoise);
+            List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 3);
+            // List<double> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
 
             // load sound file first
             // tone combine white noise over audio sample
@@ -830,6 +829,8 @@ namespace TinkeringAudio {
             MessageBox.Show(message, caption, buttons);
         }
         #endregion
+
+        
     }
 
     /// <summary>
@@ -1036,6 +1037,7 @@ namespace TinkeringAudio {
         TinkeringAudioForm m_sender;
 
         #region AUDIO_ALGORITHIMS
+
         #region AudioSplicing
         /// <summary>
         /// function to generate a list of ints which splices two audio segments together
@@ -1043,7 +1045,8 @@ namespace TinkeringAudio {
         /// <param name="audioSample0">the first audio sample</param>
         /// <param name="audioSample1">the second audio sample</param>
         /// <returns>the two spliced audio samples</returns>
-        public List<int> AudioSplicing(List<int> audioSample0, List<int> audioSample1) {
+        public List<int> AudioSplicing(List<int> audioSample0, List<int> audioSample1)
+        {
             Console.WriteLine("[RUNNING]: Audio Splicing");
 
             // declare list for the spliced sounds and set it to first audio sample
@@ -1064,7 +1067,8 @@ namespace TinkeringAudio {
         /// <param name="inputList">the sample to add an echo to</param>
         /// <param name="delayInSeconds">the offfset of the echo</param>
         /// <returns>return the sample with its added echo</returns>
-        public List<int> AddingEchos(List<int> inputList, int delayInSeconds) {
+        public List<int> AddingEchos(List<int> inputList, int delayInSeconds)
+        {
             Console.WriteLine("[RUNNING]: Add Echoes");
 
             // required: 
@@ -1081,18 +1085,21 @@ namespace TinkeringAudio {
             int echoDuration = delayInSeconds * m_sender.sampleRate;
 
             // run through the input and add the echo to the end
-            for (int i = 0; i < (inputList.Count) + echoDuration; i++) {
+            for (int i = 0; i < (inputList.Count) + echoDuration; i++)
+            {
                 // set the value to 0
                 int value = 0;
 
                 // if the current sample is less than the input sample length
-                if (i < inputList.Count) {
+                if (i < inputList.Count)
+                {
                     // add the input list at index to the value
                     value += inputList[i];
                 }
 
                 // if the echo should be playing
-                if (i - echoDuration > 0) {
+                if (i - echoDuration > 0)
+                {
                     // add the input list at index - echo duration to the value
                     value += inputList[i - echoDuration];
                 }
@@ -1112,7 +1119,8 @@ namespace TinkeringAudio {
         /// </summary>
         /// <param name="sample">the audio sample to be normalized</param>
         /// <returns>the normalized sound clip</returns>
-        public List<int> Normalisation(List<int> sample) {
+        public List<int> Normalisation(List<int> sample)
+        {
             Console.WriteLine("[RUNNING]: Normalisation");
 
             // declare and set the maximum volume of the sample
@@ -1122,7 +1130,8 @@ namespace TinkeringAudio {
             int amplitudeRatio = (m_sender.MAX_VALUE - 1) / maxAmplitudeOfSample;
 
             // run through the values of the sample
-            for (int i = 0; i < (sample.Count); i++) {
+            for (int i = 0; i < (sample.Count); i++)
+            {
                 // declare and set the normalized sample value
                 int normalizedValue = amplitudeRatio * sample[i];
 
@@ -1142,7 +1151,8 @@ namespace TinkeringAudio {
         /// <param name="audSamp"></param>
         /// <param name="audScale"></param>
         /// <returns>the resampled list</returns>
-        public List<double> Resample(List<double> audSample, double audScale) {
+        public List<double> Resample(List<double> audSample, double audScale)
+        {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Resample");
 
@@ -1153,14 +1163,17 @@ namespace TinkeringAudio {
             List<double> resampledList = new List<double>();
 
             // if modified audio scale is greater than 1 then
-            if (modAudioScale > 1) {
+            if (modAudioScale > 1)
+            {
                 // while the statement i is less than the length of audSample is true execute loop
-                for (int i = 0; i < (audSample.Count); i++) {
+                for (int i = 0; i < (audSample.Count); i++)
+                {
                     // declare double value var
                     double value = 0;
 
                     // while the statement j is less than modified audio scale is true execute loop
-                    for (int j = 0; j < modAudioScale; j++) {
+                    for (int j = 0; j < modAudioScale; j++)
+                    {
                         // audio sample i+j incriment is added to value
                         value += audSample[i + j];
                     }
@@ -1173,7 +1186,8 @@ namespace TinkeringAudio {
             }
 
             // if modified audio scale is less than 1 then
-            else {
+            else
+            {
                 // declaring the index var
                 int index = 0;
 
@@ -1184,7 +1198,8 @@ namespace TinkeringAudio {
                 double incrementAmount = 1.0 / audScale;
 
                 // while the statement index is less than the length of audiosample do this
-                do {
+                do
+                {
                     // add audio sample[index] to the resampled list
                     resampledList.Add(audSample[index]);
 
@@ -1208,7 +1223,8 @@ namespace TinkeringAudio {
         /// <param name="audSample"></param>
         /// <param name="ampFactor"></param>
         /// <returns>returns a newly scaled list</returns>
-        public List<int> ScalingAmplitude(List<int> audSample, int ampFactor) {
+        public List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
+        {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Scaling Amplitude");
 
@@ -1216,7 +1232,8 @@ namespace TinkeringAudio {
             List<int> ScaledList = new List<int>();
 
             // while the statement i is less than the length of audio sample then execute loop
-            for (int i = 0; i < (audSample.Count); i++) {
+            for (int i = 0; i < (audSample.Count); i++)
+            {
                 //declares variable v as audio sample instance i multiplied by the amplitude factor
                 int v = audSample[i] * ampFactor;
 
@@ -1241,7 +1258,8 @@ namespace TinkeringAudio {
         /// <param name="Frequency"></param>
         /// <param name="w"></param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
-        public List<double> ToneCombine(double duration, List<double> Frequency, double w) {
+        public List<int> ToneCombine(double duration, List<int> sample0, List<int> sample1)
+        {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Tone Combine");
 
@@ -1250,15 +1268,18 @@ namespace TinkeringAudio {
             // w is ???
 
             // declaring new list for the two tones to combine in
-            List<double> CombinedList = new List<double>();
+            List<int> CombinedList = new List<int>();
 
             // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (duration * m_sender.sampleRate); i++) {
+            for (int i = 0; i < (duration * m_sender.sampleRate); i++)
+            {
+                CombinedList.Add(sample0[i] * sample1[i] / 2);
                 // declares the v variable
                 int value = 0;
 
                 // while the statement i is less than the length of factor freq is true exectute loop
-                for (int j = 0; i < (Frequency.Count); j++) {
+                for (int j = 0; i < (sample0.Count); j++)
+                {
                     // wavefunction factorfreq[j] and i is added to value
                     value += Convert.ToInt32(m_sender.waveFunction(Frequency[j], i));
                 }
@@ -1277,7 +1298,8 @@ namespace TinkeringAudio {
         /// <param name="time"></param>
         /// <param name="resultantVol"></param>
         /// <returns>returns the white list list</returns>
-        public List<double> WhiteNoise(double time, double resultantVol) {
+        public List<double> WhiteNoise(double time, double resultantVol)
+        {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: White Noise");
 
@@ -1285,7 +1307,8 @@ namespace TinkeringAudio {
             List<double> WhiteList = new List<double>();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * m_sender.sampleRate); i++) {
+            for (int i = 0; i < (time * m_sender.sampleRate); i++)
+            {
                 //create a random variable which generates new random each for loop
                 Random rand = new Random();
 
@@ -1296,6 +1319,8 @@ namespace TinkeringAudio {
             return WhiteList;
         }
         #endregion
+
         #endregion
     }
+
 }
