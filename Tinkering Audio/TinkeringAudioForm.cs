@@ -1255,36 +1255,23 @@ namespace TinkeringAudio {
         /// this function takes two tones and combines them so they play at the same time
         /// </summary>
         /// <param name="duration"></param>
-        /// <param name="Frequency"></param>
-        /// <param name="w"></param>
+        /// <param name="sample0"></param>
+        /// <param name="sample1"></param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
-        public List<int> ToneCombine(double duration, List<int> sample0, List<int> sample1)
-        {
+        public List<int> ToneCombine(double duration, List<int> sample0, List<int> sample1) {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Tone Combine");
-
-            // This algorithm can be used to make the amplitude of a given sequence, s by some factor f.
-            // d is the duration 
-            // w is ???
 
             // declaring new list for the two tones to combine in
             List<int> CombinedList = new List<int>();
 
-            // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (duration * m_sender.sampleRate); i++)
-            {
-                CombinedList.Add(sample0[i] * sample1[i] / 2);
-                // declares the v variable
-                int value = 0;
+            int sampleDuration = (int)(duration * m_sender.sampleRate);
 
-                // while the statement i is less than the length of factor freq is true exectute loop
-                for (int j = 0; i < (sample0.Count); j++)
-                {
-                    // wavefunction factorfreq[j] and i is added to value
-                    value += Convert.ToInt32(m_sender.waveFunction(Frequency[j], i));
-                }
-                // adds value into the combined tone list
-                CombinedList.Add(value);
+            sampleDuration = Math.Min(Math.Min(sample0.Count, sample1.Count), sampleDuration);
+
+            // while the statement i is less than duration multiplied by the sample rate is true execute loop
+            for (int i = 0; i < (sampleDuration); i++) {
+                CombinedList.Add((sample0[i] + sample1[i]) / 2);
             }
             // returns the modifed combined list
             return CombinedList;
