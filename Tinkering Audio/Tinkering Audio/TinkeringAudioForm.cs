@@ -695,39 +695,49 @@ namespace TinkeringAudio {
             // a byte array to store the output from the Load Audio Clip function
             byte[] buffer = null;
             // create a new file dialog (pop up window to browse windows explorer)
-            OpenFileDialog openFileDialog = new OpenFileDialog {
+            OpenFileDialog OFDialog = new OpenFileDialog {
                 // set the initial directory to be the C drive
                 InitialDirectory = "C:\\",
-                // add some filters to the dialog
-                Filter = "Supported audio files (*.aac, *.mp3, *.wav, *.wma)|*.aac;*.mp3;*.wav;*.wma|" // supported file type
-                    + "All files (*.*)|*.*", // all files
+                // create a filter
+                Filter = "All files (*.*)|*.*"                      // all files
+                + "|Advanced Audio Coding file (*.aac)|*.aac"       // Advanced Audio Coding file saving
+                + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
+                + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
+                + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
                 FilterIndex = 1, // start the filter index at 1 (supported files)
                 RestoreDirectory = true, // enable restoring directory when the dialog is closed
                 Title = "Load an audio file..." // change the title to something more fitting
             };
 
             // open the file dialog, if the OK button is pressed
-            if (openFileDialog.ShowDialog() == DialogResult.OK) {
+            if (OFDialog.ShowDialog() == DialogResult.OK) {
                 // try to run the following
                 try {
                     // set the path to the file name
-                    string path = openFileDialog.FileName;
+                    string path = OFDialog.FileName;
+
+                    ISampleProvider sampleProvider = null;
+                    IWaveProvider waveProvider = null;
+
+                    using (var decoder = new MediaFoundationReader(path)) {
+                        sampleProvider = decoder.ToSampleProvider();
+                        waveProvider = sampleProvider.ToWaveProvider16();
+
+                        // create a buffer to store the bytes
+                        buffer = new byte[decoder.Length];
+                    }
+
+                    WaveFormat waveFormat = waveProvider.WaveFormat;
 
                     // create a new file reader for the file
-                    WaveFileReader waveFileReader = new WaveFileReader(path);
+                    //WaveFileReader waveFileReader = new WaveFileReader(path);
 
                     // get the sample rate and channel count of the wave file
-                    int sampleRate = waveFileReader.WaveFormat.SampleRate;
-                    int channelCount = waveFileReader.WaveFormat.Channels;
+                    int sampleRate = waveFormat.SampleRate;
+                    int channelCount = waveFormat.Channels;
 
                     m_sender.sampleRate = sampleRate;
                     m_sender.channelCount = channelCount;
-
-                    // generate a wave prodivder from the file
-                    IWaveProvider waveProvider = waveFileReader.ToSampleProvider().ToWaveProvider16();
-
-                    // create a buffer to store the bytes
-                    buffer = new byte[waveFileReader.Length];
                     
                     waveProvider.Read(buffer, 0, buffer.Length);
 
@@ -1040,7 +1050,7 @@ namespace TinkeringAudio {
         /// this function takes two tones and combines them so they play at the same time
         /// </summary>
         /// <param name="duration"></param>
-        /// <param name="factorFreq"></param>
+        /// <param name="Frequency"></param>
         /// <param name="w"></param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
         public List<double> ToneCombine(double duration, List<double> Frequency, double w) {
