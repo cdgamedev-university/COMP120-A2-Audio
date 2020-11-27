@@ -737,16 +737,19 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
+            
 
-            //Stream windAudio = Tinkering_Audio.AmbienceAudioResource.wind;
-
-            List<double> whiteNoise = audioManipulation.WhiteNoise(2, 0.4);
-            List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 3);
-            // List<double> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
-
-            // load sound file first
-            // tone combine white noise over audio sample
-            // tone combine echo with edited audio sample
+            try
+            {
+                List<int> whiteNoise = audioManipulation.WhiteNoise(2, 1);
+                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 3);
+                List<int> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
+                
+            }
+            catch(NullReferenceException)
+            {
+                TinkeringAudioExceptionHandler.ExceptionHandler("Null Reference Exception: No audio loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
+            }
         }
         #endregion
 
@@ -1285,13 +1288,13 @@ namespace TinkeringAudio {
         /// <param name="time"></param>
         /// <param name="resultantVol"></param>
         /// <returns>returns the white list list</returns>
-        public List<double> WhiteNoise(double time, double resultantVol)
+        public List<int> WhiteNoise(double time, int resultantVol)
         {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: White Noise");
 
             // declaring new list for the two tones to combine in 
-            List<double> WhiteList = new List<double>();
+            List<int> WhiteList = new List<int>();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
             for (int i = 0; i < (time * m_sender.sampleRate); i++)
@@ -1300,7 +1303,7 @@ namespace TinkeringAudio {
                 Random rand = new Random();
 
                 // adds a random number between -1 and 1 to the white list
-                WhiteList.Add(rand.Next(-1, 1));
+                WhiteList.Add(rand.Next(-1, 1) * resultantVol);
             }
             // returns modifed white list to 
             return WhiteList;
