@@ -33,22 +33,12 @@
 // Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk           \\
 //***********************************************************************\\
 
+// the packages for the program
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Resources;
-using NAudio;
 using NAudio.Wave;
 using NAudio.MediaFoundation;
-using NAudio.Utils;
 
 namespace Tinkering_Audio {
     /// <summary>

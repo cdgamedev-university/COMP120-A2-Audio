@@ -30,20 +30,8 @@
 // the packages for the program
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Resources;
-using NAudio;
-using NAudio.Wave;
-using NAudio.MediaFoundation;
-using NAudio.Utils;
 
 // assign class under the Tinkering_Audio namespace
 namespace Tinkering_Audio {
@@ -159,8 +147,8 @@ namespace Tinkering_Audio {
         /// <summary>
         /// a function to resample a audio sample using a factor, audScale, to scale the audio.
         /// </summary>
-        /// <param name="sample"></param>
-        /// <param name="scaleFactor"></param>
+        /// <param name="sample">the sample to be resampled</param>
+        /// <param name="scaleFactor">the factor the sample should be manipulated by</param>
         /// <returns>the resampled list</returns>
         public List<int> Resample(List<int> sample, double scaleFactor) {
             // write to the console that the function is being ran
@@ -224,8 +212,8 @@ namespace Tinkering_Audio {
         /// <summary>
         /// this function will scale the amplitude of a audio sample to either make it louder or quieter
         /// </summary>
-        /// <param name="sample"></param>
-        /// <param name="amplifyingFactor"></param>
+        /// <param name="sample">the sample that will be manipulated</param>
+        /// <param name="amplifyingFactor">the factor to amplify the wave by</param>
         /// <returns>returns the sample with scaled amplitudes</returns>
         public List<int> ScalingAmplitude(List<int> sample, double amplifyingFactor) {
             // write to the console that the function is being ran
@@ -253,9 +241,9 @@ namespace Tinkering_Audio {
         /// <summary>
         /// this function takes two tones and combines them so they play at the same time
         /// </summary>
-        /// <param name="duration"></param>
-        /// <param name="sample0"></param>
-        /// <param name="sample1"></param>
+        /// <param name="duration">the duration of the tone to combine</param>
+        /// <param name="sample0">the first sample</param>
+        /// <param name="sample1">the second sample</param>
         /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
         public List<int> ToneCombine(double duration, List<int> sample0, List<int> sample1) {
             // write to the console that the function is being ran
@@ -288,10 +276,10 @@ namespace Tinkering_Audio {
         /// <summary>
         /// this function creates white noise, does not require audio sample to edit
         /// </summary>
-        /// <param name="time"></param>
-        /// <param name="resultantVol"></param>
+        /// <param name="duration">the duration of the white noise that will be generated</param>
+        /// <param name="resultantVol">the volume of the white noise generated</param>
         /// <returns>returns the white list list</returns>
-        public List<int> WhiteNoise(double time, int resultantVol) {
+        public List<int> WhiteNoise(double duration, int resultantVol) {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: White Noise");
 
@@ -302,7 +290,7 @@ namespace Tinkering_Audio {
             Random rand = new Random();
 
             // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * m_sender.sampleRate); i++) {
+            for (int i = 0; i < (duration * m_sender.sampleRate); i++) {
                 // adds a random number between -1 and 1 to the white list
                 WhiteList.Add(rand.Next(-1, 1) * resultantVol * m_sender.MAX_VALUE);
             }
@@ -318,7 +306,7 @@ namespace Tinkering_Audio {
         /// function which applys an audio splice to the chosen clip
         /// </summary>
         /// <param name="audioClip">the starting clip to add a splice to the end of</param>
-        /// <returns></returns>
+        /// <returns>returns an audio clip with more spliced onto the end</returns>
         public List<int> ApplyAudioSplice(List<int> audioClip) {
             // load an audio clip
             byte[] loadedAudioBytes = m_sender.audioFileIO.LoadAudioClip();
@@ -333,67 +321,97 @@ namespace Tinkering_Audio {
             return audioClip;
         }
 
+        /// <summary>
+        /// function to apply the village effect to the audio clip
+        /// </summary>
+        /// <param name="audioClip">the audio clip to apply the village effect to</param>
+        /// <returns>the manipulated audio clip</returns>
         public List<int> ApplyVillageEffect(List<int> audioClip) {
-            // load sound file first
-            // tone combine happy beat with birds/insects
-            // normalize sound file
+            // load the cicadia sounds file and convert it to a list of ints
             Stream clip = IncludedAudio.Cicadia_Sounds;
             List<int> villageBackgroundAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
+            // apply a normalisation and scaling amplitude effect to the audio loaded above
             villageBackgroundAudio = Normalisation(villageBackgroundAudio);
             villageBackgroundAudio = ScalingAmplitude(villageBackgroundAudio, 0.1);
 
+            // combine the tones in audio clip and the village background
             audioClip = ToneCombine(30, audioClip, villageBackgroundAudio);
 
+            // return the manipulated audio clip
             return audioClip;
         }
+
+        /// <summary>
+        /// function to apply the forest effect to the audio clip
+        /// </summary>
+        /// <param name="audioClip">the audio clip to apply the forest effect to</param>
+        /// <returns>the manipulated audio clip</returns>
         public List<int> ApplyForestEffect(List<int> audioClip) {
-            // load sound file first
-            // tone combine wind sound with audio insect sound
-            // tone combine wind/insect with loaded audio sound file
-            // scale amplitude up slightly on edited spliced audio
-            // then finally normalize it to ensure that one spliced audio is louder than the other
+            // load the cicadia sounds file and convert it to a list of ints
             Stream clip = IncludedAudio.Cicadia_Sounds;
             List<int> forestBackgroundAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
-                
+
+            // load the wind sounds file and convert it to a list of ints
             clip = IncludedAudio.Wind;
             List<int> windAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
+            // apply normalization to the forest background
             forestBackgroundAudio = Normalisation(forestBackgroundAudio);
+
+            // apply normalization to the wind
             windAudio = Normalisation(windAudio);
 
+            // combine the two files then scale the amplitude of the combined sound
             windAudio = ToneCombine(30, windAudio, forestBackgroundAudio);
             windAudio = ScalingAmplitude(windAudio, 0.1);
 
+            // scale the audio clip's amplitude and combine it with the background audio
             audioClip = ScalingAmplitude(audioClip, 4);
-
             audioClip = ToneCombine(30, windAudio, audioClip);
 
+            // return the manipulated audio clip
             return audioClip;
         }
 
+        /// <summary>
+        /// function to apply the cave effect to the audio clip
+        /// </summary>
+        /// <param name="audioClip">the audio clip to apply the cave effect to</param>
+        /// <returns>the manipulated audio clip</returns>
         public List<int> ApplyCaveEffect(List<int> audioClip) {
-            // load sound file first
-            // tone combine white noise over audio sample
-            // tone combine echo over audio sample
-            // normalize final editied audio sample
+            // load the cave drip sounds file and convert it to a list of ints
             Stream clip = IncludedAudio.Ambience_Cave_Drips;
             List<int> caveDripAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
+            // apply normalization to the cave drip sound
             caveDripAudio = Normalisation(caveDripAudio);
 
+            // combine the cave drip and audio clip and add an echo
             audioClip = ToneCombine(30, audioClip, caveDripAudio);
-
             audioClip = AddingEchos(audioClip, 5);
 
+            // return the manipulated audio clip
             return audioClip;
         }
 
+        /// <summary>
+        /// function to apply the ocean effect to the audio clip
+        /// </summary>
+        /// <param name="audioClip">the audio clip to apply the ocean effect to</param>
+        /// <returns>the manipulated audio clip</returns>
         public List<int> ApplyOceanEffect(List<int> audioClip) {
-            List<int> whiteNoise = WhiteNoise(2, 1);
+            // generate white noise
+            List<int> whiteNoise = WhiteNoise(30, 1);
+            
+            // add an echo to the audio clip and then combine it with the white noise
             audioClip = AddingEchos(audioClip, 5);
             audioClip = ToneCombine(30, whiteNoise, audioClip);
 
+            // resample the audio clip
+            audioClip = Resample(audioClip, 0.8);
+
+            // return the manipulated audio clip
             return audioClip;
         }
         #endregion

@@ -58,8 +58,8 @@ namespace Tinkering_Audio {
         /// <summary>
         /// function to handle exception
         /// </summary>
-        /// <param name="caption"></param>
-        /// <param name="exception"></param>
+        /// <param name="caption">the caption of the message box</param>
+        /// <param name="exception">the exception reason</param>
         public void Handle(string caption, ExceptionType exception) {
             string message = caption + ": The program has run into a problem.\n\nPlease contact the developer with the issue.";
 

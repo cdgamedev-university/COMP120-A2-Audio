@@ -55,23 +55,13 @@
 //***************************************************************************\\
 #endregion
 
-// the usings for the program
+// the packages for the program
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Resources;
-using NAudio;
 using NAudio.Wave;
-using NAudio.MediaFoundation;
-using NAudio.Utils;
 
 /// <summary>
 /// the namespace which stores all the code for the tinkering audio project
@@ -143,9 +133,10 @@ namespace Tinkering_Audio {
         private Bitrates save_bitrate = Bitrates.kbit192;
         #endregion
 
-        #region FORM INITIALISATION AND LOADS
+        #region FORM INITIALISATION
         // initialise the form
         public TinkeringAudioForm() {
+            // initialize the form
             InitializeComponent();
 
             // create a new audio file io directing to this class instance as the sender
@@ -154,6 +145,7 @@ namespace Tinkering_Audio {
             // create a new audio manipulation directing to this class instance as the sender
             audioManipulation = new AudioManipulation(sender: this);
 
+            // create a new exception handler
             exceptionHandler = new ExceptionHandler();
         }
 
@@ -310,7 +302,7 @@ namespace Tinkering_Audio {
         /// <typeparam name="T">generic type</typeparam>
         /// <param name="enumerable">the list to choose from</param>
         /// <param name="prng">the pseudo random number generator</param>
-        /// <returns></returns>
+        /// <returns>returns a random element of the enumerable</returns>
         private static T GetRandomElement<T>(IEnumerable<T> enumerable, Random prng) {
             // get a random index and return the value of that index
             int index = prng.Next(0, enumerable.Count());
@@ -503,7 +495,7 @@ namespace Tinkering_Audio {
         /// </summary>
         /// <param name="frequency">the frequency of the wave</param>
         /// <param name="position">the position of the sample</param>
-        /// <returns></returns>
+        /// <returns>a 1 or 0 depending on the frequency</returns>
         private double SquareWave(double frequency, int position) {
             // calculate the value
             double value = Math.Sin(2.0 * Math.PI * frequency * (position / (double)sampleRate));
@@ -559,7 +551,7 @@ namespace Tinkering_Audio {
 
         #region BUTTON FUNCTIONS
         /// <summary>
-        /// function to control when the load audio file button is pressed
+        /// function to control what should happen when the load audio file button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -579,7 +571,7 @@ namespace Tinkering_Audio {
         }
 
         /// <summary>
-        /// function to cotnrol when the save audio button is pressed
+        /// function to cotnrol what should happen when the save audio button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -599,7 +591,7 @@ namespace Tinkering_Audio {
         }
 
         /// <summary>
-        /// function to control when the play button is pressed
+        /// function to control what should happen when the play button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -609,7 +601,7 @@ namespace Tinkering_Audio {
         }
 
         /// <summary>
-        /// function to handle when the stop button is pressed
+        /// function to control what should happen when the stop button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -619,7 +611,7 @@ namespace Tinkering_Audio {
         }
 
         /// <summary>
-        /// function to handle when the pause button is pressed
+        /// function to control what should happen when the pause button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -631,71 +623,106 @@ namespace Tinkering_Audio {
 
         #region AMBIENCE BUTTONS
         /// <summary>
-        /// function to handle when the Village button is clicked
+        /// function to control what should happen when the Village button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Villagebtn_Click(object sender, EventArgs e) {
+            // if there is a wave loaded
             if (loadedWaveInt != null) {
+                // apply the village filter to the audio
                 loadedWaveInt = audioManipulation.ApplyVillageEffect(loadedWaveInt);
 
+                // generate the wave out
                 GenerateWaveOut();
-            } else {
+            }
+            // if there isn't a wave loaded
+            else {
+                // open a message box which tells the user that no audio is loaded
                 exceptionHandler.Handle("Error: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_ApplyEffect);
             }
         }
 
         /// <summary>
-        /// function to handle when the Forest button is clicked
+        /// function to control what should happen when the Forest button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Forestbtn_Click(object sender, EventArgs e) {
+            // if there is a wave loaded
             if (loadedWaveInt != null) {
+                // apply the forest filter to the audio
                 loadedWaveInt = audioManipulation.ApplyForestEffect(loadedWaveInt);
 
+                // generate the wave out
                 GenerateWaveOut();
-            } else {
+            }
+            // if there isn't a wave loaded
+            else {
+                // open a message box which tells the user that no audio is loaded
                 exceptionHandler.Handle("Error: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_ApplyEffect);
             }
         }
 
         /// <summary>
-        /// function to handle when the Cave button is clicked
+        /// function to control when the Cave button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Cavebtn_Click(object sender, EventArgs e) {
+            // if there is a wave loaded
             if (loadedWaveInt != null) {
+                // apply the cave filter to the audio
                 loadedWaveInt = audioManipulation.ApplyCaveEffect(loadedWaveInt);
 
+                // generate the wave out
                 GenerateWaveOut();
-            } else {
+            }
+            // if there isn't a wave loaded
+            else {
+                // open a message box which tells the user that no audio is loaded
                 exceptionHandler.Handle("Error: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_ApplyEffect);
             }
         }
 
         /// <summary>
-        /// function to handle when the Ocean button is clicked
+        /// function to control what should happen when the Ocean button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
+            // if there is a wave loaded
             if (loadedWaveInt != null) {
+                // apply the ocean filter to the audio
                 loadedWaveInt = audioManipulation.ApplyOceanEffect(loadedWaveInt);
 
+                // generate the wave out
                 GenerateWaveOut();
-            } else {
+            }
+            // if there isn't a wave loaded
+            else {
+                // open a message box which tells the user that no audio is loaded
                 exceptionHandler.Handle("Error: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_ApplyEffect);
             }
         }
 
+        /// <summary>
+        /// function to control what should happen when the Audio Splice button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_AudioSplice_Click(object sender, EventArgs e) {
+            // if there is a wave loaded
             if (loadedWaveInt != null) {
+                // apply a splicing to the audio
                 loadedWaveInt = audioManipulation.ApplyAudioSplice(loadedWaveInt);
 
+                // generate the wave out
                 GenerateWaveOut();
-            } else {
+            }
+            // if there isn't a wave loaded
+            else {
+                // open a message box which tells the user that no audio is loaded
                 exceptionHandler.Handle("Error: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_ApplyEffect);
             }
         }
@@ -705,7 +732,7 @@ namespace Tinkering_Audio {
 
         #region COMBO BOX FUNCTIONS
         /// <summary>
-        /// function to handle when the wave type dropdown gets changed
+        /// function to control when the wave type dropdown gets changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -717,7 +744,7 @@ namespace Tinkering_Audio {
         }
 
         /// <summary>
-        /// function to handle when the bitrate is changed
+        /// function to control when the bitrate is changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
