@@ -1,4 +1,33 @@
-﻿// the usings for the program
+﻿//***************************************************************************************************\\
+//                       ██████  ██████  ███    ███ ██████   ██ ██████   ██████                      \\
+//                      ██      ██    ██ ████  ████ ██   ██ ███      ██ ██  ████                     \\
+//                      ██      ██    ██ ██ ████ ██ ██████   ██  █████  ██ ██ ██                     \\
+//                      ██      ██    ██ ██  ██  ██ ██       ██ ██      ████  ██                     \\
+//                       ██████  ██████  ██      ██ ██       ██ ███████  ██████                      \\
+//                                                                                                   \\
+//                  ████████ ██ ███    ██ ██   ██ ███████ ██████  ██ ███    ██  ██████               \\
+//                     ██    ██ ████   ██ ██  ██  ██      ██   ██ ██ ████   ██ ██                    \\
+//                     ██    ██ ██ ██  ██ █████   █████   ██████  ██ ██ ██  ██ ██   ███              \\
+//                     ██    ██ ██  ██ ██ ██  ██  ██      ██   ██ ██ ██  ██ ██ ██    ██              \\
+//                     ██    ██ ██   ████ ██   ██ ███████ ██   ██ ██ ██   ████  ██████               \\
+//                                                                                                   \\
+//           █████  ██    ██ ██████  ██  ██████          █████  ██    ██ ██████  ██  ██████          \\
+//          ██   ██ ██    ██ ██   ██ ██ ██    ██ ██     ██   ██ ██    ██ ██   ██ ██ ██    ██         \\
+//          ███████ ██    ██ ██   ██ ██ ██    ██        ███████ ██    ██ ██   ██ ██ ██    ██         \\
+//          ██   ██ ██    ██ ██   ██ ██ ██    ██ ██     ██   ██ ██    ██ ██   ██ ██ ██    ██         \\
+//          ██   ██  ██████  ██████  ██  ██████         ██   ██  ██████  ██████  ██  ██████          \\
+//                                                                                                   \\
+//  ███    ███  █████  ███    ██ ██ ██████  ██    ██ ██       █████  ████████ ██  ██████  ███    ██  \\
+//  ████  ████ ██   ██ ████   ██ ██ ██   ██ ██    ██ ██      ██   ██    ██    ██ ██    ██ ████   ██  \\
+//  ██ ████ ██ ███████ ██ ██  ██ ██ ██████  ██    ██ ██      ███████    ██    ██ ██    ██ ██ ██  ██  \\
+//  ██  ██  ██ ██   ██ ██  ██ ██ ██ ██      ██    ██ ██      ██   ██    ██    ██ ██    ██ ██  ██ ██  \\
+//  ██      ██ ██   ██ ██   ████ ██ ██       ██████  ███████ ██   ██    ██    ██  ██████  ██   ████  \\
+//                                                                                                   \\
+// Copyright (c) 2020 Daisy Baker and Hayley Davies                                                  \\
+// Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk                                       \\
+//***************************************************************************************************\\
+
+// the usings for the program
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +45,9 @@ using NAudio.Wave;
 using NAudio.MediaFoundation;
 using NAudio.Utils;
 
+/// <summary>
+/// declare under the namespace Tinkering_Audio
+/// </summary>
 namespace Tinkering_Audio {
     /// <summary>
     /// class for handling the audio manipulation
@@ -42,16 +74,14 @@ namespace Tinkering_Audio {
         /// <param name="audioSample1">the second audio sample</param>
         /// <returns>the two spliced audio samples</returns>
         public List<int> AudioSplicing(List<int> audioSample0, List<int> audioSample1) {
+            // write that the Audio Splicing sample is running
             Console.WriteLine("[RUNNING]: Audio Splicing");
 
-            // declare list for the spliced sounds and set it to first audio sample
-            List<int> splicedList = audioSample0;
-
             // add the second audio sample to the end of the list
-            splicedList.AddRange(audioSample1);
+            audioSample0.AddRange(audioSample1);
 
             // return the list
-            return splicedList;
+            return audioSample0;
         }
         #endregion
 
@@ -63,14 +93,6 @@ namespace Tinkering_Audio {
         /// <param name="delayInSeconds">the offfset of the echo</param>
         /// <returns>return the sample with its added echo</returns>
         public List<int> AddingEchos(List<int> inputList, int delayInSeconds) {
-
-            // required: 
-            // 1 =< t
-            // 1 =< (S) sampleRate; 
-
-            // there is an input list s, where the input is extended by t seconds
-            // combines input list with delayed copy of itself
-
             // the duration of the echo added to the end
             int echoDuration = delayInSeconds * m_sender.sampleRate;
 
@@ -243,18 +265,21 @@ namespace Tinkering_Audio {
             // declaring new list for the two tones to combine in
             List<int> CombinedList = new List<int>();
 
-            int sampleDuration = (int)(duration * m_sender.sampleRate);
+            if (sample0 != null && sample1 != null) {
+                int sampleDuration = (int)(duration * m_sender.sampleRate);
 
-            // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (sampleDuration); i++) {
-                if (sample0.Count <= i) {
-                    sample0.Add(0);
+                // while the statement i is less than duration multiplied by the sample rate is true execute loop
+                for (int i = 0; i < (sampleDuration); i++) {
+                    if (sample0.Count <= i) {
+                        sample0.Add(0);
+                    }
+                    if (sample1.Count <= i) {
+                        sample1.Add(0);
+                    }
+                    CombinedList.Add((sample0[i] + sample1[i]) / 2);
                 }
-                if (sample1.Count <= i) {
-                    sample1.Add(0);
-                }
-                CombinedList.Add((sample0[i] + sample1[i]) / 2);
             }
+
             // returns the modifed combined list
             return CombinedList;
         }
@@ -290,27 +315,36 @@ namespace Tinkering_Audio {
         #endregion
 
         #region COMPLETE EFFECTS
+        /// <summary>
+        /// function which applys an audio splice to the chosen clip
+        /// </summary>
+        /// <param name="audioClip">the starting clip to add a splice to the end of</param>
+        /// <returns></returns>
+        public List<int> ApplyAudioSplice(List<int> audioClip) {
+            // load an audio clip
+            byte[] loadedAudioBytes = m_sender.audioFileIO.LoadAudioClip();
+
+            // convert the byte[] to an int<List>
+            List<int> loadedAudioInts = ConvertToListInt(loadedAudioBytes);
+
+            // splice the two audio clips together
+            audioClip = AudioSplicing(audioClip, loadedAudioInts);
+
+            // return the new audio clip
+            return audioClip;
+        }
+
         public List<int> ApplyVillageEffect(List<int> audioClip) {
             // load sound file first
             // tone combine happy beat with birds/insects
             // normalize sound file
-            try {
-                if (audioClip == null) {
-                    throw new ArgumentNullException();
-                }
+            Stream clip = IncludedAudio.Cicadia_Sounds;
+            List<int> villageBackgroundAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
-                Stream clip = IncludedAudio.Cicadia_Sounds;
-                List<int> villageBackgroundAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+            villageBackgroundAudio = Normalisation(villageBackgroundAudio);
+            villageBackgroundAudio = ScalingAmplitude(villageBackgroundAudio, 0.1);
 
-                villageBackgroundAudio = Normalisation(villageBackgroundAudio);
-                villageBackgroundAudio = ScalingAmplitude(villageBackgroundAudio, 0.1);
-
-                audioClip = ToneCombine(30, audioClip, villageBackgroundAudio);
-            } catch (ArgumentNullException) {
-                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
+            audioClip = ToneCombine(30, audioClip, villageBackgroundAudio);
 
             return audioClip;
         }
@@ -320,31 +354,21 @@ namespace Tinkering_Audio {
             // tone combine wind/insect with loaded audio sound file
             // scale amplitude up slightly on edited spliced audio
             // then finally normalize it to ensure that one spliced audio is louder than the other
-            try {
-                if (audioClip == null) {
-                    throw new ArgumentNullException();
-                }
-
-                Stream clip = IncludedAudio.Cicadia_Sounds;
-                List<int> forestBackgroundAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+            Stream clip = IncludedAudio.Cicadia_Sounds;
+            List<int> forestBackgroundAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
                 
-                clip = IncludedAudio.Wind;
-                List<int> windAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+            clip = IncludedAudio.Wind;
+            List<int> windAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
-                forestBackgroundAudio = Normalisation(forestBackgroundAudio);
-                windAudio = Normalisation(windAudio);
+            forestBackgroundAudio = Normalisation(forestBackgroundAudio);
+            windAudio = Normalisation(windAudio);
 
-                windAudio = ToneCombine(30, windAudio, forestBackgroundAudio);
-                windAudio = ScalingAmplitude(windAudio, 0.1);
+            windAudio = ToneCombine(30, windAudio, forestBackgroundAudio);
+            windAudio = ScalingAmplitude(windAudio, 0.1);
 
-                audioClip = ScalingAmplitude(audioClip, 4);
+            audioClip = ScalingAmplitude(audioClip, 4);
 
-                audioClip = ToneCombine(30, windAudio, audioClip);
-            } catch (ArgumentNullException) {
-                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
+            audioClip = ToneCombine(30, windAudio, audioClip);
 
             return audioClip;
         }
@@ -354,44 +378,58 @@ namespace Tinkering_Audio {
             // tone combine white noise over audio sample
             // tone combine echo over audio sample
             // normalize final editied audio sample
-            try {
-                if (audioClip == null) {
-                    throw new ArgumentNullException();
-                }
+            Stream clip = IncludedAudio.Ambience_Cave_Drips;
+            List<int> caveDripAudio = ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
-                Stream clip = IncludedAudio.Ambience_Cave_Drips;
-                List<int> caveDripAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+            caveDripAudio = Normalisation(caveDripAudio);
 
-                caveDripAudio = Normalisation(caveDripAudio);
+            audioClip = ToneCombine(30, audioClip, caveDripAudio);
 
-                audioClip = ToneCombine(30, audioClip, caveDripAudio);
-
-                audioClip = AddingEchos(audioClip, 5);
-            } catch (ArgumentNullException) {
-                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
+            audioClip = AddingEchos(audioClip, 5);
 
             return audioClip;
         }
 
         public List<int> ApplyOceanEffect(List<int> audioClip) {
-            try {
-                if (audioClip == null) {
-                    throw new ArgumentNullException();
-                }
-
-                List<int> whiteNoise = WhiteNoise(2, 1);
-                audioClip = AddingEchos(audioClip, 5);
-                audioClip = ToneCombine(30, whiteNoise, audioClip);
-            } catch (ArgumentNullException) {
-                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
+            List<int> whiteNoise = WhiteNoise(2, 1);
+            audioClip = AddingEchos(audioClip, 5);
+            audioClip = ToneCombine(30, whiteNoise, audioClip);
 
             return audioClip;
+        }
+        #endregion
+
+        #region CONVERSION TO INT LIST
+        /// <summary>
+        /// converts a byte list to an int list
+        /// </summary>
+        /// <param name="waveByte">the byte list of the wave</param>
+        /// <returns></returns>
+        public List<int> ConvertToListInt(byte[] waveByte) {
+            // create a new int list to store the wave
+            List<int> wave = new List<int>();
+
+            // calculate the length of the wave @ 16 bits
+            int waveLength = waveByte.Length / 2;
+
+            // set the byte array index to 0
+            int byteArrayIndex = 0;
+
+            // create a new value for the bytes to be stored
+            byte[] value = new byte[2];
+
+            // run through the length of the int wave
+            for (int i = 0; i < waveLength; i++) {
+                // set values 0 and 1 based off the byte values
+                value[0] = waveByte[byteArrayIndex++];
+                value[1] = waveByte[byteArrayIndex++];
+
+                // convert the value to 16 bit int and add that to the wave
+                wave.Add(BitConverter.ToInt16(value, 0));
+            }
+
+            // return the new wave as an int list
+            return wave;
         }
         #endregion
     }
