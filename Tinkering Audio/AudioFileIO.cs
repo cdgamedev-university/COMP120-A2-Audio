@@ -36,6 +36,7 @@
 // the packages for the program
 using System;
 using System.IO;
+using System.Runtime;
 using System.Windows.Forms;
 using NAudio.Wave;
 using NAudio.MediaFoundation;
@@ -90,32 +91,17 @@ namespace Tinkering_Audio {
 
             // open the file dialog, if the OK button is pressed
             if (OFDialog.ShowDialog() == DialogResult.OK) {
-                // try to run the following
-                try {
-                    // set the path to the file name
-                    string path = OFDialog.FileName;
+                // set the path to the file name
+                string path = OFDialog.FileName;
 
-                    Stream clip = new FileStream(path, FileMode.Open);
+                // create new file stream for the clip
+                Stream clip = new FileStream(path, FileMode.Open);
 
-                    // return the loaded audio clip as a byte array
-                    return DecodeAudioClip(clip);
-                }
-                // if there is a format exception
-                catch (FormatException e) {
-                    // call the exception handler to deal with the exception
-                    m_sender.exceptionHandler.Handle("Expected Format Exception: Audio Import Error", ExceptionHandler.ExceptionType.AudioImportError);
+                // set the buffer to the decoded bytes
+                byte[] buffer = DecodeAudioClip(clip);
 
-                    // call the function again
-                    LoadAudioClip();
-                }
-                // if there is an undefined error
-                catch (Exception ex) {
-                    // call the exception handler to deal with the exception
-                    m_sender.exceptionHandler.Handle("Exception: " + ex.ToString() + " - Audio Import", ExceptionHandler.ExceptionType.UndefinedError);
-
-                    // call the function again
-                    LoadAudioClip();
-                }
+                // return the loaded audio clip as a byte array
+                return buffer;
             }
 
             // return the loaded audio clip as null - in the event the dialog closes instead
@@ -126,11 +112,12 @@ namespace Tinkering_Audio {
             // a byte array to store the output from the Decode Audio Clip function
             byte[] buffer = null;
 
+            // seclare a new wave provider
             IWaveProvider waveProvider = null;
 
             // using a MediaFoundationReader at the path
             using (var decoder = new StreamMediaFoundationReader(clip)) {
-                // set the sample and wave providers
+                // set the wave provider
                 waveProvider = decoder.ToSampleProvider().ToWaveProvider16();
 
                 // create a buffer with the decoder length
@@ -154,6 +141,7 @@ namespace Tinkering_Audio {
             // read the bytes from the wave provider and store it in the buffer
             waveProvider.Read(buffer, 0, buffer.Length);
 
+            // return the buffer
             return buffer;
         }
 

@@ -155,6 +155,7 @@
             this.cbox_WaveType.Name = "cbox_WaveType";
             this.cbox_WaveType.Size = new System.Drawing.Size(250, 21);
             this.cbox_WaveType.TabIndex = 12;
+            this.cbox_WaveType.Visible = false;
             this.cbox_WaveType.SelectedIndexChanged += new System.EventHandler(this.cbox_WaveType_SelectedIndexChanged);
             // 
             // cbox_Bitrate
@@ -188,6 +189,7 @@
             this.lbl_ChangeWaveType.TabIndex = 15;
             this.lbl_ChangeWaveType.Text = "Change Wave Type:";
             this.lbl_ChangeWaveType.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_ChangeWaveType.Visible = false;
             // 
             // btn_AudioSplice
             // 

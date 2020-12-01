@@ -550,24 +550,57 @@ namespace Tinkering_Audio {
         #endregion
 
         #region BUTTON FUNCTIONS
+
+        void LoadClicked() {
+            // try to run the following code
+            try {
+                // load the wave as bytes
+                loadedWaveByte = audioFileIO.LoadAudioClip();
+
+                // if the loaded wave isnt null then convert the wave to a List<int> (as the other manipulation functions require this)
+                if (loadedWaveByte != null) {
+                    loadedWaveInt = audioManipulation.ConvertToListInt(loadedWaveByte);
+
+                    GenerateWaveOut();
+                }
+
+                // write to the console the channel count and sample rate
+                Console.WriteLine("Channel Count: {0}, Sample Rate: {1}", channelCount, sampleRate);
+            }
+            // if there is a format exception
+            catch (FormatException e) {
+                // call the exception handler to deal with the exception
+                exceptionHandler.Handle("Expected Format Exception: Audio Import Error", ExceptionHandler.ExceptionType.AudioImportError);
+
+                // call the function again
+                LoadClicked();
+            }
+            // if there is a COM error error
+            catch (System.Runtime.InteropServices.COMException) {
+                // call the exception handler to deal with the exception
+                exceptionHandler.Handle("Expected Format Exception: Audio Import Error", ExceptionHandler.ExceptionType.AudioImportError);
+
+                // call the function again
+                LoadClicked();
+            }
+            // if there is an undefined error
+            catch (Exception ex) {
+                // call the exception handler to deal with the exception
+                exceptionHandler.Handle("Exception: " + ex.ToString() + " - Audio Import", ExceptionHandler.ExceptionType.UndefinedError);
+
+                // call the function again
+                LoadClicked();
+            }
+        }
+
         /// <summary>
         /// function to control what should happen when the load audio file button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btn_LoadAudioFile_Click(object sender, EventArgs e) {
-            // load the wave as bytes
-            loadedWaveByte = audioFileIO.LoadAudioClip();
-
-            // if the loaded wave isnt null then convert the wave to a List<int> (as the other manipulation functions require this)
-            if (loadedWaveByte != null) {
-                loadedWaveInt = audioManipulation.ConvertToListInt(loadedWaveByte);
-
-                GenerateWaveOut();
-            }
-
-            // write to the console the channel count and sample rate
-            Console.WriteLine("Channel Count: {0}, Sample Rate: {1}", channelCount, sampleRate);
+            // run the load clicked function
+            LoadClicked();
         }
 
         /// <summary>
