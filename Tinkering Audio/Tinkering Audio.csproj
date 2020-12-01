@@ -49,14 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AmbienceAudioResource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AmbienceAudioResource.resx</DependentUpon>
-    </Compile>
     <Compile Include="AudioManipulation.cs" />
     <Compile Include="AudioFileIO.cs" />
     <Compile Include="ExceptionHandler.cs" />
+    <Compile Include="IncludedAudio.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IncludedAudio.resx</DependentUpon>
+    </Compile>
     <Compile Include="TinkeringAudioForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,17 +65,16 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="AmbienceAudioResource.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>AmbienceAudioResource.Designer.cs</LastGenOutput>
-    </Content>
     <None Include="Resources\AMP.wav" />
     <None Include="Resources\Ambience Cave Drips.wav" />
     <None Include="Resources\wind.wav" />
     <None Include="Resources\Water Drip Underground.wav" />
     <None Include="Resources\Lawrie phone.wav" />
     <None Include="Resources\Cicadia Sounds.wav" />
+    <EmbeddedResource Include="IncludedAudio.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>IncludedAudio.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="TinkeringAudioForm.resx">
       <DependentUpon>TinkeringAudioForm.cs</DependentUpon>
     </EmbeddedResource>

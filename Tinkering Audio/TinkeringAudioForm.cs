@@ -121,7 +121,7 @@ namespace Tinkering_Audio {
         private double[] noteDuration;
 
         // the audio file io class (for saving and loading)
-        private AudioFileIO audioFileIO;
+        public AudioFileIO audioFileIO;
 
         // the audio manipulation class (for manipulating the audio)
         private AudioManipulation audioManipulation;
@@ -401,7 +401,7 @@ namespace Tinkering_Audio {
         /// </summary>
         /// <param name="waveByte">the byte list of the wave</param>
         /// <returns></returns>
-        private List<int> ConvertToListInt(byte[] waveByte) {
+        public List<int> ConvertToListInt(byte[] waveByte) {
             // calculate the length of the wave @ 16 bits
             int waveLength = waveByte.Length / 2;
 
@@ -713,9 +713,9 @@ namespace Tinkering_Audio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Villagebtn_Click(object sender, EventArgs e) {
-            // load sound file first
-            // tone combine happy beat with birds/insects
-            // normalize sound file
+            loadedWaveInt = audioManipulation.ApplyVillageEffect(loadedWaveInt);
+
+            GenerateWaveOut();
         }
 
         /// <summary>
@@ -724,11 +724,9 @@ namespace Tinkering_Audio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Forestbtn_Click(object sender, EventArgs e) {
-            // load sound file first
-            // tone combine wind sound with audio insect sound
-            // tone combine wind/insect with loaded audio sound file
-            // scale amplitude up slightly on edited spliced audio
-            // then finally normalize it to ensure that one spliced audio is louder than the other
+            loadedWaveInt = audioManipulation.ApplyForestEffect(loadedWaveInt);
+
+            GenerateWaveOut();
         }
 
         /// <summary>
@@ -737,7 +735,9 @@ namespace Tinkering_Audio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Cavebtn_Click(object sender, EventArgs e) {
-            CaveEffect();
+            loadedWaveInt = audioManipulation.ApplyCaveEffect(loadedWaveInt);
+
+            GenerateWaveOut();
         }
 
         /// <summary>
@@ -746,58 +746,13 @@ namespace Tinkering_Audio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
-            OceanEffect();
+            loadedWaveInt = audioManipulation.ApplyOceanEffect(loadedWaveInt);
+
+            GenerateWaveOut();
         }
         #endregion
 
-        #region MANIPULATE FUNCTIONS
-        private void CaveEffect() {
-            // load sound file first
-            // tone combine white noise over audio sample
-            // tone combine echo over audio sample
-            // normalize final editied audio sample
-            try {
-                if (loadedWaveInt == null) {
-                    throw new ArgumentNullException();
-                }
-
-                double sampleTime = loadedWaveInt.Count / (sampleRate * channelCount);
-
-                List<int> whiteNoise = audioManipulation.WhiteNoise(sampleTime, 1);
-                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 5);
-                List<int> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
-
-                loadedWaveInt = twoTones;
-
-                GenerateWaveOut();
-
-            } catch (ArgumentNullException) {
-                exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
-        }
-
-        private void OceanEffect() {
-            try {
-                if (loadedWaveInt == null) {
-                    throw new ArgumentNullException();
-                }
-
-                List<int> whiteNoise = audioManipulation.WhiteNoise(2, 1);
-                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 5);
-                List<int> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
-
-                loadedWaveInt = twoTones;
-
-                GenerateWaveOut();
-            } catch (ArgumentNullException) {
-                exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
-            } catch (Exception ex) {
-                exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
-            }
-        }
-        #endregion
+        
 
         #region COMBO BOX FUNCTIONS
         /// <summary>

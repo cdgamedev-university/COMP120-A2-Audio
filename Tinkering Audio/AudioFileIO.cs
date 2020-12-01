@@ -1,7 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Resources;
+using NAudio;
 using NAudio.Wave;
 using NAudio.MediaFoundation;
+using NAudio.Utils;
 
 namespace Tinkering_Audio {
     /// <summary>
@@ -36,8 +48,6 @@ namespace Tinkering_Audio {
         /// </summary>
         /// <returns>the bytes from the file selected</returns>
         public byte[] LoadAudioClip() {
-            // a byte array to store the output from the Load Audio Clip function
-            byte[] buffer = null;
             // create a new file dialog (pop up window to browse windows explorer)
             OpenFileDialog OFDialog = new OpenFileDialog {
                 // set the starting directory to the music folder
@@ -60,39 +70,10 @@ namespace Tinkering_Audio {
                     // set the path to the file name
                     string path = OFDialog.FileName;
 
-                    // declare a new sample and wave provider as null
-                    ISampleProvider sampleProvider = null;
-                    IWaveProvider waveProvider = null;
-
-                    // using a MediaFoundationReader at the path
-                    using (var decoder = new MediaFoundationReader(path)) {
-                        // set the sample and wave providers
-                        sampleProvider = decoder.ToSampleProvider();
-                        waveProvider = sampleProvider.ToWaveProvider16();
-
-                        // create a buffer with the decoder length
-                        buffer = new byte[decoder.Length];
-                    }
-
-                    // create a new waveformat using the waveprovider
-                    WaveFormat waveFormat = waveProvider.WaveFormat;
-
-                    // create a new file reader for the file
-                    //WaveFileReader waveFileReader = new WaveFileReader(path);
-
-                    // get the sample rate and channel count of the wave file
-                    int sampleRate = waveFormat.SampleRate;
-                    int channelCount = waveFormat.Channels;
-
-                    // set the main class's sample rate and channel count
-                    m_sender.sampleRate = sampleRate;
-                    m_sender.channelCount = channelCount;
-
-                    // read the bytes from the wave provider and store it in the buffer
-                    waveProvider.Read(buffer, 0, buffer.Length);
+                    Stream clip = new FileStream(path, FileMode.Open);
 
                     // return the loaded audio clip as a byte array
-                    return buffer;
+                    return DecodeAudioClip(clip);
                 }
                 // if there is a format exception
                 catch (FormatException e) {
@@ -114,6 +95,41 @@ namespace Tinkering_Audio {
 
             // return the loaded audio clip as null - in the event the dialog closes instead
             return null;
+        }
+
+        public byte[] DecodeAudioClip(Stream clip) {
+            // a byte array to store the output from the Decode Audio Clip function
+            byte[] buffer = null;
+
+            IWaveProvider waveProvider = null;
+
+            // using a MediaFoundationReader at the path
+            using (var decoder = new StreamMediaFoundationReader(clip)) {
+                // set the sample and wave providers
+                waveProvider = decoder.ToSampleProvider().ToWaveProvider16();
+
+                // create a buffer with the decoder length
+                buffer = new byte[decoder.Length];
+            }
+
+            // create a new waveformat using the waveprovider
+            WaveFormat waveFormat = waveProvider.WaveFormat;
+
+            // create a new file reader for the file
+            //WaveFileReader waveFileReader = new WaveFileReader(path);
+
+            // get the sample rate and channel count of the wave file
+            int sampleRate = waveFormat.SampleRate;
+            int channelCount = waveFormat.Channels;
+
+            // set the main class's sample rate and channel count
+            m_sender.sampleRate = sampleRate;
+            m_sender.channelCount = channelCount;
+
+            // read the bytes from the wave provider and store it in the buffer
+            waveProvider.Read(buffer, 0, buffer.Length);
+
+            return buffer;
         }
 
         /// <summary>
@@ -172,8 +188,7 @@ namespace Tinkering_Audio {
                             break;
                     }
 
-                    Console.WriteLine(SFDialog.FilterIndex);
-                    Console.WriteLine((AudioFileFormat)SFDialog.FilterIndex);
+                    Console.WriteLine($"Saving file as: {(AudioFileFormat)SFDialog.FilterIndex}");
 
                     // if the media type has been set
                     if (mediaType != null) {

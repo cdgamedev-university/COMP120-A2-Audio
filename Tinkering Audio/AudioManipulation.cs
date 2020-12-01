@@ -1,7 +1,20 @@
 ﻿// the usings for the program
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Resources;
+using NAudio;
+using NAudio.Wave;
+using NAudio.MediaFoundation;
+using NAudio.Utils;
 
 namespace Tinkering_Audio {
     /// <summary>
@@ -19,7 +32,7 @@ namespace Tinkering_Audio {
         // declare the member sender for the initial form
         TinkeringAudioForm m_sender;
 
-        #region AUDIO_ALGORITHIMS
+        #region INDIVIDUAL MANIPULATION
 
         #region AudioSplicing
         /// <summary>
@@ -79,10 +92,6 @@ namespace Tinkering_Audio {
                 if (i - echoDuration > 0) {
                     // add the input list at index - echo duration to the value
                     value += inputList[i - echoDuration];
-                }
-
-                if (i % 1000 == 0) {
-                    Console.WriteLine(value);
                 }
 
                 // add the value to the echo list
@@ -194,31 +203,28 @@ namespace Tinkering_Audio {
         /// <summary>
         /// this function will scale the amplitude of a audio sample to either make it louder or quieter
         /// </summary>
-        /// <param name="audSample"></param>
-        /// <param name="ampFactor"></param>
-        /// <returns>returns a newly scaled list</returns>
-        public List<int> ScalingAmplitude(List<int> audSample, int ampFactor) {
+        /// <param name="sample"></param>
+        /// <param name="amplifyingFactor"></param>
+        /// <returns>returns the sample with scaled amplitudes</returns>
+        public List<int> ScalingAmplitude(List<int> sample, double amplifyingFactor) {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Scaling Amplitude");
 
-            // delcares a new list to hold the scaled audio
-            List<int> ScaledList = new List<int>();
-
             // while the statement i is less than the length of audio sample then execute loop
-            for (int i = 0; i < (audSample.Count); i++) {
-                //declares variable v as audio sample instance i multiplied by the amplitude factor
-                int v = audSample[i] * ampFactor;
+            for(int i =0; i < sample.Count; i++) {
+                // declare the value by multiplying the sample's value by the amplitude factor
+                int value = (int)(sample[i] * amplifyingFactor);
 
-                v = Math.Max((v), v);
+                // ensure that the value is within range
+                value = Math.Max(0, value);
+                value = Math.Min(m_sender.MAX_VALUE, value);
 
-                v = Math.Min((v), v);
-
-                // adds v to the scaled list
-                ScaledList.Add(v);
+                // set the sample at position i to the valye
+                sample[i] = value;
             }
 
             // returns the modified audio through returning the scaled list
-            return ScaledList;
+            return sample;
         }
         #endregion
 
@@ -281,6 +287,109 @@ namespace Tinkering_Audio {
         }
         #endregion
 
+        #endregion
+
+        #region COMPLETE EFFECTS
+        public List<int> ApplyVillageEffect(List<int> audioClip) {
+            // load sound file first
+            // tone combine happy beat with birds/insects
+            // normalize sound file
+            try {
+                if (audioClip == null) {
+                    throw new ArgumentNullException();
+                }
+
+                Stream clip = IncludedAudio.Ambience_Cave_Drips;
+                List<int> caveDripAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+
+                caveDripAudio = Normalisation(caveDripAudio);
+
+                audioClip = ToneCombine(30, audioClip, caveDripAudio);
+
+                audioClip = AddingEchos(audioClip, 5);
+            } catch (ArgumentNullException) {
+                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
+            }
+
+            return audioClip;
+        }
+        public List<int> ApplyForestEffect(List<int> audioClip) {
+            // load sound file first
+            // tone combine wind sound with audio insect sound
+            // tone combine wind/insect with loaded audio sound file
+            // scale amplitude up slightly on edited spliced audio
+            // then finally normalize it to ensure that one spliced audio is louder than the other
+            try {
+                if (audioClip == null) {
+                    throw new ArgumentNullException();
+                }
+
+                Stream clip = IncludedAudio.Cicadia_Sounds;
+                List<int> forestBackgroundAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+                
+                clip = IncludedAudio.Wind;
+                List<int> windAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+
+                forestBackgroundAudio = Normalisation(forestBackgroundAudio);
+                windAudio = Normalisation(windAudio);
+
+                windAudio = ToneCombine(30, windAudio, forestBackgroundAudio);
+                windAudio = ScalingAmplitude(windAudio, 1);
+            } catch (ArgumentNullException) {
+                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
+            }
+
+            return audioClip;
+        }
+
+        public List<int> ApplyCaveEffect(List<int> audioClip) {
+            // load sound file first
+            // tone combine white noise over audio sample
+            // tone combine echo over audio sample
+            // normalize final editied audio sample
+            try {
+                if (audioClip == null) {
+                    throw new ArgumentNullException();
+                }
+
+                Stream clip = IncludedAudio.Ambience_Cave_Drips;
+                List<int> caveDripAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+
+                caveDripAudio = Normalisation(caveDripAudio);
+
+                audioClip = ToneCombine(30, audioClip, caveDripAudio);
+
+                audioClip = AddingEchos(audioClip, 5);
+            } catch (ArgumentNullException) {
+                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
+            }
+
+            return audioClip;
+        }
+
+        public List<int> ApplyOceanEffect(List<int> audioClip) {
+            try {
+                if (audioClip == null) {
+                    throw new ArgumentNullException();
+                }
+
+                List<int> whiteNoise = WhiteNoise(2, 1);
+                audioClip = AddingEchos(audioClip, 5);
+                audioClip = ToneCombine(30, whiteNoise, audioClip);
+            } catch (ArgumentNullException) {
+                m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                m_sender.exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
+            }
+
+            return audioClip;
+        }
         #endregion
     }
 }

@@ -22,24 +22,24 @@ namespace Tinkering_Audio {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AmbienceAudioResource {
+    internal class IncludedAudio {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AmbienceAudioResource() {
+        internal IncludedAudio() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tinkering_Audio.AmbienceAudioResource", typeof(AmbienceAudioResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tinkering_Audio.IncludedAudio", typeof(IncludedAudio).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Tinkering_Audio {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream Ambience_Cave_Drips {
+        internal static System.IO.UnmanagedMemoryStream Ambience_Cave_Drips {
             get {
                 return ResourceManager.GetStream("Ambience_Cave_Drips", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream AMP {
+        internal static System.IO.UnmanagedMemoryStream AMP {
             get {
                 return ResourceManager.GetStream("AMP", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream Cicadia_Sounds {
+        internal static System.IO.UnmanagedMemoryStream Cicadia_Sounds {
             get {
                 return ResourceManager.GetStream("Cicadia_Sounds", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream Lawrie_phone {
+        internal static System.IO.UnmanagedMemoryStream Lawrie_phone {
             get {
                 return ResourceManager.GetStream("Lawrie_phone", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream Water_Drip_Underground {
+        internal static System.IO.UnmanagedMemoryStream Water_Drip_Underground {
             get {
                 return ResourceManager.GetStream("Water_Drip_Underground", resourceCulture);
             }
@@ -108,9 +108,9 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream wind {
+        internal static System.IO.UnmanagedMemoryStream Wind {
             get {
-                return ResourceManager.GetStream("wind", resourceCulture);
+                return ResourceManager.GetStream("Wind", resourceCulture);
             }
         }
     }
