@@ -27,7 +27,7 @@
 // Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk                                       \\
 //***************************************************************************************************\\
 
-// the usings for the program
+// the packages for the program
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -45,9 +45,7 @@ using NAudio.Wave;
 using NAudio.MediaFoundation;
 using NAudio.Utils;
 
-/// <summary>
-/// declare under the namespace Tinkering_Audio
-/// </summary>
+// assign class under the Tinkering_Audio namespace
 namespace Tinkering_Audio {
     /// <summary>
     /// class for handling the audio manipulation
@@ -93,6 +91,9 @@ namespace Tinkering_Audio {
         /// <param name="delayInSeconds">the offfset of the echo</param>
         /// <returns>return the sample with its added echo</returns>
         public List<int> AddingEchos(List<int> inputList, int delayInSeconds) {
+            // write that the adding echos function is running
+            Console.WriteLine("[RUNNING]: Add Echoes");
+
             // the duration of the echo added to the end
             int echoDuration = delayInSeconds * m_sender.sampleRate;
 
@@ -119,8 +120,6 @@ namespace Tinkering_Audio {
                 // add the value to the echo list
                 echoList.Add(value);
             }
-
-            Console.WriteLine("[RUNNING]: Add Echoes");
             // return the echo list
             return echoList;
         }
@@ -133,6 +132,7 @@ namespace Tinkering_Audio {
         /// <param name="sample">the audio sample to be normalized</param>
         /// <returns>the normalized sound clip</returns>
         public List<int> Normalisation(List<int> sample) {
+            // write that the normalisation function is running
             Console.WriteLine("[RUNNING]: Normalisation");
 
             // declare and set the maximum volume of the sample
@@ -159,15 +159,15 @@ namespace Tinkering_Audio {
         /// <summary>
         /// a function to resample a audio sample using a factor, audScale, to scale the audio.
         /// </summary>
-        /// <param name="audSample"></param>
-        /// <param name="audScale"></param>
+        /// <param name="sample"></param>
+        /// <param name="scaleFactor"></param>
         /// <returns>the resampled list</returns>
-        public List<int> Resample(List<int> audSample, double audScale) {
+        public List<int> Resample(List<int> sample, double scaleFactor) {
             // write to the console that the function is being ran
             Console.WriteLine("[RUNNING]: Resample");
 
             // the modified audioscale 
-            double modAudioScale = 1.0 / audScale;
+            double modAudioScale = 1.0 / scaleFactor;
 
             //declares list for the resampled sound
             List<int> resampledList = new List<int>();
@@ -175,14 +175,14 @@ namespace Tinkering_Audio {
             // if modified audio scale is greater than 1 then
             if (modAudioScale > 1) {
                 // while the statement i is less than the length of audSample is true execute loop
-                for (int i = 0; i < (audSample.Count); i++) {
+                for (int i = 0; i < (sample.Count); i++) {
                     // declare double value var
                     int value = 0;
 
                     // while the statement j is less than modified audio scale is true execute loop
                     for (int j = 0; j < modAudioScale; j++) {
                         // audio sample i+j incriment is added to value
-                        value += audSample[i + j];
+                        value += sample[i + j];
                     }
                     // value is divided by the modified audio scale
                     value = (int)(value / modAudioScale);
@@ -191,7 +191,6 @@ namespace Tinkering_Audio {
                     resampledList.Add(value);
                 }
             }
-
             // if modified audio scale is less than 1 then
             else {
                 // declaring the index var
@@ -201,12 +200,12 @@ namespace Tinkering_Audio {
                 double indexLocation = 0.0;
 
                 // declaring m as 1 divided by the audio scale
-                double incrementAmount = 1.0 / audScale;
+                double incrementAmount = 1.0 / scaleFactor;
 
                 // while the statement index is less than the length of audiosample do this
                 do {
                     // add audio sample[index] to the resampled list
-                    resampledList.Add(audSample[index]);
+                    resampledList.Add(sample[index]);
 
                     // m is added into l
                     indexLocation += incrementAmount;
@@ -214,7 +213,7 @@ namespace Tinkering_Audio {
                     // index is now declared as l
                     index = Convert.ToInt32(indexLocation);
 
-                } while (index < (audSample.Count));
+                } while (index < (sample.Count));
             }
             // return the resampled list
             return resampledList;

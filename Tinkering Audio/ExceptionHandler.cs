@@ -1,5 +1,42 @@
-﻿using System.Windows.Forms;
+﻿//**************************************************************************\\
+//          ██████  ██████  ███    ███ ██████   ██ ██████   ██████          \\
+//         ██      ██    ██ ████  ████ ██   ██ ███      ██ ██  ████         \\
+//         ██      ██    ██ ██ ████ ██ ██████   ██  █████  ██ ██ ██         \\
+//         ██      ██    ██ ██  ██  ██ ██       ██ ██      ████  ██         \\
+//          ██████  ██████  ██      ██ ██       ██ ███████  ██████          \\
+//                                                                          \\
+//   ████████ ██ ███    ██ ██   ██ ████████ ██████  ██ ███    ██  ██████    \\
+//      ██    ██ ████   ██ ██  ██  ██       ██   ██ ██ ████   ██ ██         \\
+//      ██    ██ ██ ██  ██ █████   ██████   ██████  ██ ██ ██  ██ ██   ███   \\
+//      ██    ██ ██  ██ ██ ██  ██  ██       ██   ██ ██ ██  ██ ██ ██    ██   \\
+//      ██    ██ ██   ████ ██   ██ ████████ ██   ██ ██ ██   ████  ██████    \\
+//                                                                          \\
+//                  █████  ██    ██ ███████  ██  ██████                     \\
+//                 ██   ██ ██    ██ ██    ██ ██ ██    ██ ██                 \\
+//                 ███████ ██    ██ ██    ██ ██ ██    ██                    \\
+//                 ██   ██ ██    ██ ██    ██ ██ ██    ██ ██                 \\
+//                 ██   ██  ██████  ███████  ██  ██████                     \\
+//                                                                          \\
+//  ███████ ██   ██  ██████ ███████ ██████  ████████ ██  ██████  ███    ██  \\
+//  ██       ██ ██  ██      ██      ██   ██    ██    ██ ██    ██ ████   ██  \\
+//  █████     ███   ██      █████   ██████     ██    ██ ██    ██ ██ ██  ██  \\
+//  ██       ██ ██  ██      ██      ██         ██    ██ ██    ██ ██  ██ ██  \\
+//  ███████ ██   ██  ██████ ███████ ██         ██    ██  ██████  ██   ████  \\
+//                                                                          \\
+//        ██   ██  █████  ███    ██ ███████  ██      ███████ ██████         \\
+//        ██   ██ ██   ██ ████   ██ ██    ██ ██      ██      ██   ██        \\
+//        ███████ ███████ ██ ██  ██ ██    ██ ██      █████   ██████         \\
+//        ██   ██ ██   ██ ██  ██ ██ ██    ██ ██      ██      ██   ██        \\
+//        ██   ██ ██   ██ ██   ████ ███████  ███████ ███████ ██   ██        \\
+//                                                                          \\
+// Copyright (c) 2020 Daisy Baker and Hayley Davies                         \\
+// Contact: db246020@falmouth.ac.uk or cd230099@falmouth.ac.uk              \\
+//**************************************************************************\\
 
+// the packages for the program
+using System.Windows.Forms;
+
+// assign class under the Tinkering_Audio namespace
 namespace Tinkering_Audio {
     /// <summary>
     /// class to handle known exceptions for the form
@@ -52,12 +89,12 @@ namespace Tinkering_Audio {
                     // set the message of the message box
                     message = $"Error: No Audio Loaded for Manipulation ({(int)ExceptionType.NoAudioLoaded_ApplyEffect}).\n\nManipulation not possible, there is no file loaded. Please load an audio file first!";
                     break;
-                // if the exception is a no audio loaded for manipulation error
+                // if the exception is a no audio loaded for conversion error
                 case ExceptionType.NoAudioLoaded_Conversion:
                     // set the message of the message box
                     message = $"Error: No Audio Loaded for Conversion ({(int)ExceptionType.NoAudioLoaded_Conversion}).\n\nManipulation not possible, there is no file loaded. Please load an audio file first!";
                     break;
-                // if the exception is a no audio loaded for manipulation error
+                // if the exception is a no audio loaded for splicing error
                 case ExceptionType.NoAudioLoaded_Splicing:
                     // set the message of the message box
                     message = $"Error: No Audio Loaded for Conversion ({(int)ExceptionType.NoAudioLoaded_Splicing}).\n\nSplicing not possible, there is no file loaded. Please load an audio file first!";
