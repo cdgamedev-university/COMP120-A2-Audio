@@ -70,7 +70,7 @@ using NAudio.Utils;
 /// <summary>
 /// the namespace which stores all the code for the tinkering audio project
 /// </summary>
-namespace TinkeringAudio {
+namespace Tinkering_Audio {
     /// <summary>
     /// the form class itself
     /// </summary>
@@ -126,6 +126,9 @@ namespace TinkeringAudio {
         // the audio manipulation class (for manipulating the audio)
         private AudioManipulation audioManipulation;
 
+        // the audio exception handler class (for dealing with exceptions nicely)
+        public ExceptionHandler exceptionHandler;
+
         // information to store the loaded wave
         private byte[] loadedWaveByte;
         private List<int> loadedWaveInt;
@@ -144,6 +147,8 @@ namespace TinkeringAudio {
 
             // create a new audio manipulation directing to this class instance as the sender
             audioManipulation = new AudioManipulation(sender: this);
+
+            exceptionHandler = new ExceptionHandler(sender: this);
         }
 
         // when the form loads
@@ -381,10 +386,10 @@ namespace TinkeringAudio {
                 return waveProvider;
             } catch (ArgumentNullException) {
                 // call the exception handler to deal with the exception
-                TinkeringAudioExceptionHandler.ExceptionHandler("Argument Null Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
+                exceptionHandler.Handle("Argument Null Exception: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded);
             } catch (Exception ex) {
                 // call the exception handler to deal with the exception
-                TinkeringAudioExceptionHandler.ExceptionHandler(ex.ToString(), TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
+                exceptionHandler.Handle(ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
             }
 
             // return nothing
@@ -432,7 +437,7 @@ namespace TinkeringAudio {
             // if the wave out is set to null
             if (waveOut == null) {
                 // display a box to the user
-                TinkeringAudioExceptionHandler.ExceptionHandler("Null Reference Exception: No Audio Loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded_Playback);
+                exceptionHandler.Handle("Null Reference Exception: No Audio Loaded", ExceptionHandler.ExceptionType.NoAudioLoaded_Playback);
             }
             // if the wave out is not null
             else {
@@ -732,10 +737,7 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Cavebtn_Click(object sender, EventArgs e) {
-            // load sound file first
-            // tone combine white noise over audio sample
-            // tone combine echo over audio sample
-            // normalize final editied audio sample
+            CaveEffect();
         }
 
         /// <summary>
@@ -744,8 +746,40 @@ namespace TinkeringAudio {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Oceanbtn_Click(object sender, EventArgs e) {
-            try
-            {
+            OceanEffect();
+        }
+        #endregion
+
+        #region MANIPULATE FUNCTIONS
+        private void CaveEffect() {
+            // load sound file first
+            // tone combine white noise over audio sample
+            // tone combine echo over audio sample
+            // normalize final editied audio sample
+            try {
+                if (loadedWaveInt == null) {
+                    throw new ArgumentNullException();
+                }
+
+                double sampleTime = loadedWaveInt.Count / (sampleRate * channelCount);
+
+                List<int> whiteNoise = audioManipulation.WhiteNoise(sampleTime, 1);
+                List<int> echoNoise = audioManipulation.AddingEchos(loadedWaveInt, 5);
+                List<int> twoTones = audioManipulation.ToneCombine(30, whiteNoise, echoNoise);
+
+                loadedWaveInt = twoTones;
+
+                GenerateWaveOut();
+
+            } catch (ArgumentNullException) {
+                exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
+            }
+        }
+
+        private void OceanEffect() {
+            try {
                 if (loadedWaveInt == null) {
                     throw new ArgumentNullException();
                 }
@@ -757,11 +791,10 @@ namespace TinkeringAudio {
                 loadedWaveInt = twoTones;
 
                 GenerateWaveOut();
-
-            }
-            catch(ArgumentNullException)
-            {
-                TinkeringAudioExceptionHandler.ExceptionHandler("Arugment Null Exception: No audio loaded", TinkeringAudioExceptionHandler.ExceptionType.NoAudioLoaded);
+            } catch (ArgumentNullException) {
+                exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
+            } catch (Exception ex) {
+                exceptionHandler.Handle("Undefined Error: " + ex.ToString(), ExceptionHandler.ExceptionType.UndefinedError);
             }
         }
         #endregion
@@ -792,546 +825,4 @@ namespace TinkeringAudio {
         }
         #endregion
     }
-
-    /// <summary>
-    /// class to handle known exceptions for the form
-    /// </summary>
-    public class TinkeringAudioExceptionHandler {
-
-        // enum for the types of exception
-        public enum ExceptionType {
-            AudioImportError,       // audio import error - for when an error occurs when trying to load audio files
-            UndefinedError,         // undefined error - for when an error isn't explicitly checked for
-            NoAudioLoaded,          // no audio loaded - for when the save button is pressed
-            NoAudioLoaded_Playback  // no audio loaded - for when the playback buttons are pressed
-        }
-
-        #region EXCEPTION HANDLER
-        /// <summary>
-        /// function to handle exception
-        /// </summary>
-        /// <param name="caption"></param>
-        /// <param name="exception"></param>
-        public static void ExceptionHandler(string caption, ExceptionType exception) {
-            string message = caption + ": The program has run into a problem.";
-
-            // test conditions of the exception
-            switch (exception) {
-                // if the exception is unknown
-                case ExceptionType.UndefinedError:
-                    // do nothing - check first because most likely
-                    break;
-                // if the exception is an audio import error
-                case ExceptionType.AudioImportError:
-                    // set the message of the message box
-                    message = "Error: Expected Format Exception.\n\nThis file doesn't appear to be a supported audio format. Please choose a different file.";
-                    break;
-                // if the exception is a no audio loaded error
-                case ExceptionType.NoAudioLoaded:
-                    // set the message of the message box
-                    message = "Error: Argument Null Exception.\n\nSaving not possible, there is no audio file loaded. Please load an audio file first!";
-                    break;
-                // if the exception is a no audio loaded for playback error
-                case ExceptionType.NoAudioLoaded_Playback:
-                    // set the message of the message box
-                    message = "Error: No Audio Loaded for Playback.\n\nPlayback not possible, there is no file loaded. Please load an audio file first!";
-                    break;
-            }
-
-            // set the message box to have only the ok button shown
-            MessageBoxButtons buttons = MessageBoxButtons.OK;
-
-            // show the message box with the above details
-            MessageBox.Show(message, caption, buttons);
-        }
-        #endregion
-
-        
-    }
-
-    /// <summary>
-    /// class for dealing with audio input and output
-    /// </summary>
-    public class AudioFileIO {
-
-        // an enum to store the different file types
-        enum AudioFileFormat {
-            None,   // No file format given
-            AAC,    // Advanced Audio Coding
-            MP3,    // MPEG Audio Layer-3
-            WAV,    // Waveform Audio File Format
-            WMA     // Windows Media Audio
-        }
-
-        /// <summary>
-        /// how the AudioFileIO should be initialised
-        /// </summary>
-        /// <param name="sender">the main form class itself</param>
-        public AudioFileIO(TinkeringAudioForm sender) {
-            // the sender object so that it's values can be manipulated
-            m_sender = sender;
-        }
-
-        // the sender as a local member variable
-        public TinkeringAudioForm m_sender;
-
-        #region SAVING AND LOADING FILES
-        /// <summary>
-        /// load an audio clip from a file
-        /// </summary>
-        /// <returns>the bytes from the file selected</returns>
-        public byte[] LoadAudioClip() {
-            // a byte array to store the output from the Load Audio Clip function
-            byte[] buffer = null;
-            // create a new file dialog (pop up window to browse windows explorer)
-            OpenFileDialog OFDialog = new OpenFileDialog {
-                // set the starting directory to the music folder
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-                // create a filter
-                Filter = "All files (*.*)|*.*"                      // all files
-                + "|Advanced Audio Coding file (*.aac)|*.aac"       // Advanced Audio Coding file saving
-                + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
-                + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
-                + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
-                FilterIndex = 1, // start the filter index at 1 (all files)
-                RestoreDirectory = true, // enable restoring directory when the dialog is closed
-                Title = "Load an audio file..." // change the title to something more fitting
-            };
-
-            // open the file dialog, if the OK button is pressed
-            if (OFDialog.ShowDialog() == DialogResult.OK) {
-                // try to run the following
-                try {
-                    // set the path to the file name
-                    string path = OFDialog.FileName;
-
-                    // declare a new sample and wave provider as null
-                    ISampleProvider sampleProvider = null;
-                    IWaveProvider waveProvider = null;
-
-                    // using a MediaFoundationReader at the path
-                    using (var decoder = new MediaFoundationReader(path)) {
-                        // set the sample and wave providers
-                        sampleProvider = decoder.ToSampleProvider();
-                        waveProvider = sampleProvider.ToWaveProvider16();
-
-                        // create a buffer with the decoder length
-                        buffer = new byte[decoder.Length];
-                    }
-
-                    // create a new waveformat using the waveprovider
-                    WaveFormat waveFormat = waveProvider.WaveFormat;
-
-                    // create a new file reader for the file
-                    //WaveFileReader waveFileReader = new WaveFileReader(path);
-
-                    // get the sample rate and channel count of the wave file
-                    int sampleRate = waveFormat.SampleRate;
-                    int channelCount = waveFormat.Channels;
-
-                    // set the main class's sample rate and channel count
-                    m_sender.sampleRate = sampleRate;
-                    m_sender.channelCount = channelCount;
-                    
-                    // read the bytes from the wave provider and store it in the buffer
-                    waveProvider.Read(buffer, 0, buffer.Length);
-
-                    // return the loaded audio clip as a byte array
-                    return buffer;
-                }
-                // if there is a format exception
-                catch (FormatException e) {
-                    // call the exception handler to deal with the exception
-                    TinkeringAudioExceptionHandler.ExceptionHandler("Expected Format Exception: Audio Import Error", TinkeringAudioExceptionHandler.ExceptionType.AudioImportError);
-
-                    // call the function again
-                    LoadAudioClip();
-                }
-                // if there is an undefined error
-                catch (Exception ex) {
-                    // call the exception handler to deal with the exception
-                    TinkeringAudioExceptionHandler.ExceptionHandler("Exception: " + ex.ToString() + " - Audio Import", TinkeringAudioExceptionHandler.ExceptionType.UndefinedError);
-
-                    // call the function again
-                    LoadAudioClip();
-                }
-            }
-
-            // return the loaded audio clip as null - in the event the dialog closes instead
-            return null;
-        }
-
-        /// <summary>
-        /// save the audio clip to a file
-        /// </summary>
-        /// <param name="waveProvider">the wave provider to save to</param>
-        public void SaveAudioClip(IWaveProvider waveProvider, int bitrate) {
-            // initialize a new SaveFileDialog to export the audio files
-            SaveFileDialog SFDialog = new SaveFileDialog {
-                // set the starting directory to the music folder
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-                // create a filter
-                Filter = "Advanced Audio Coding file (*.aac)|*.aac" // Advanced Audio Coding file saving
-                + "|MPEG Audio Layer-3 file (*.mp3)|*.mp3"          // MPEG Audio Layer-3 file saving
-                + "|Waveform Audio File Format file (*.wav)|*.wav"  // Waveform Audio File Format file saving
-                + "|Windows Media Video file (*.wma)|*.wma",        // Windows Media Audio file saving
-                // start the filter at wav files (common format)
-                FilterIndex = 3,
-                // set the title
-                Title = "Export audio..."
-            };
-            // show the dialog
-            if (SFDialog.ShowDialog() == DialogResult.OK) {
-                if (SFDialog.FileName != "") {
-                    // set the file name based off the the directory of the SaveFileDialog
-                    string filename = SFDialog.FileName;
-
-                    // create a wave format from the waveprovider passed as a parameter
-                    WaveFormat waveFormat = waveProvider.WaveFormat;
-
-                    // create a new format for the wave
-                    var outFormat = new WaveFormat(bitrate, waveFormat.Channels);
-                    // declare the media type
-                    MediaType mediaType = null;
-
-                    // check the options in the filter index
-                    switch ((AudioFileFormat)SFDialog.FilterIndex) {
-                        // if an aac file is chosen to be saved
-                        case AudioFileFormat.AAC:
-                            // set the media type to the AAC encoding
-                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_AAC, waveFormat, bitrate);
-                            break;
-                        // if an mp3 file is chosen to be saved
-                        case AudioFileFormat.MP3:
-                            // set the media type to the MP3 encoding
-                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, waveFormat, bitrate);
-                            break;
-                        // if a wav file is chosen to be saved
-                        case AudioFileFormat.WAV:
-                            WaveFileWriter.CreateWaveFile(filename, waveProvider);
-                            break;
-                        // if a wma file is chosen to be saved
-                        case AudioFileFormat.WMA:
-                            // set the media type to the WMA encoding
-                            mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_WMAudioV9, waveFormat, bitrate);
-                            break;
-                    }
-
-                    Console.WriteLine(SFDialog.FilterIndex);
-                    Console.WriteLine((AudioFileFormat)SFDialog.FilterIndex);
-
-                    // if the media type has been set
-                    if (mediaType != null) {
-                        // create a new resampler to resample to wave provider to the out format
-                        using (var resampler = new MediaFoundationResampler(waveProvider, outFormat)) {
-                            // create a new encoder
-                            using (var encoder = new MediaFoundationEncoder(mediaType)) {
-                                // save the file with the envoding
-                                encoder.Encode(filename, waveProvider);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
-    }
-
-    /// <summary>
-    /// class for handling the audio manipulation
-    /// </summary>
-    public class AudioManipulation {
-        /// <summary>
-        /// how to audio manipulation should be initialised
-        /// </summary>
-        /// <param name="sender">the main form class itself</param>
-        public AudioManipulation(TinkeringAudioForm sender) {
-            m_sender = sender;
-        }
-        
-        // declare the member sender for the initial form
-        TinkeringAudioForm m_sender;
-
-        #region AUDIO_ALGORITHIMS
-
-        #region AudioSplicing
-        /// <summary>
-        /// function to generate a list of ints which splices two audio segments together
-        /// </summary>
-        /// <param name="audioSample0">the first audio sample</param>
-        /// <param name="audioSample1">the second audio sample</param>
-        /// <returns>the two spliced audio samples</returns>
-        public List<int> AudioSplicing(List<int> audioSample0, List<int> audioSample1)
-        {
-            Console.WriteLine("[RUNNING]: Audio Splicing");
-
-            // declare list for the spliced sounds and set it to first audio sample
-            List<int> splicedList = audioSample0;
-
-            // add the second audio sample to the end of the list
-            splicedList.AddRange(audioSample1);
-
-            // return the list
-            return splicedList;
-        }
-        #endregion
-
-        #region AddingEchos
-        /// <summary>
-        /// function to add echos
-        /// </summary>
-        /// <param name="inputList">the sample to add an echo to</param>
-        /// <param name="delayInSeconds">the offfset of the echo</param>
-        /// <returns>return the sample with its added echo</returns>
-        public List<int> AddingEchos(List<int> inputList, int delayInSeconds)
-        {
-
-            // required: 
-            // 1 =< t
-            // 1 =< (S) sampleRate; 
-
-            // there is an input list s, where the input is extended by t seconds
-            // combines input list with delayed copy of itself
-
-            // the duration of the echo added to the end
-            int echoDuration = delayInSeconds * m_sender.sampleRate;
-
-            // create a new list for the echo
-            List<int> echoList = new List<int>(inputList.Count + echoDuration);
-
-            // run through the input and add the echo to the end
-            for (int i = 0; i < inputList.Count + echoDuration; i++)
-            {
-                // set the value to 0
-                int value = 0;
-
-                // if the current sample is less than the input sample length
-                if (i < inputList.Count)
-                {
-                    // add the input list at index to the value
-                    value += inputList[i];
-                }
-
-                // if the echo should be playing
-                if (i - echoDuration > 0)
-                {
-                    // add the input list at index - echo duration to the value
-                    value += inputList[i - echoDuration];
-                }
-
-                if (i % 1000 == 0) {
-                    Console.WriteLine(value);
-                }
-
-                // add the value to the echo list
-                echoList.Add(value);
-            }
-
-            Console.WriteLine("[RUNNING]: Add Echoes");
-            // return the echo list
-            return echoList;
-        }
-        #endregion
-
-        #region Normalisation
-        /// <summary>
-        /// this function will normalize the sound which would try to make the volume of the sound even throughout the audio clip
-        /// </summary>
-        /// <param name="sample">the audio sample to be normalized</param>
-        /// <returns>the normalized sound clip</returns>
-        public List<int> Normalisation(List<int> sample)
-        {
-            Console.WriteLine("[RUNNING]: Normalisation");
-
-            // declare and set the maximum volume of the sample
-            int maxAmplitudeOfSample = sample.Max();
-
-            // declare and set the ratio of the amplitude compared the the max aplitude
-            int amplitudeRatio = (m_sender.MAX_VALUE - 1) / maxAmplitudeOfSample;
-
-            // run through the values of the sample
-            for (int i = 0; i < (sample.Count); i++)
-            {
-                // declare and set the normalized sample value
-                int normalizedValue = amplitudeRatio * sample[i];
-
-                // set the sample at the i position to the normalized sample value
-                sample[i] = normalizedValue;
-            }
-
-            // return the sample
-            return sample;
-        }
-        #endregion
-
-        #region Resample
-        /// <summary>
-        /// a function to resample a audio sample using a factor, audScale, to scale the audio.
-        /// </summary>
-        /// <param name="audSample"></param>
-        /// <param name="audScale"></param>
-        /// <returns>the resampled list</returns>
-        public List<int> Resample(List<int> audSample, double audScale)
-        {
-            // write to the console that the function is being ran
-            Console.WriteLine("[RUNNING]: Resample");
-
-            // the modified audioscale 
-            double modAudioScale = 1.0 / audScale;
-
-            //declares list for the resampled sound
-            List<int> resampledList = new List<int>();
-
-            // if modified audio scale is greater than 1 then
-            if (modAudioScale > 1)
-            {
-                // while the statement i is less than the length of audSample is true execute loop
-                for (int i = 0; i < (audSample.Count); i++)
-                {
-                    // declare double value var
-                    int value = 0;
-
-                    // while the statement j is less than modified audio scale is true execute loop
-                    for (int j = 0; j < modAudioScale; j++)
-                    {
-                        // audio sample i+j incriment is added to value
-                        value += audSample[i + j];
-                    }
-                    // value is divided by the modified audio scale
-                    value = (int)(value / modAudioScale);
-
-                    // adds value onto the resampled list
-                    resampledList.Add(value);
-                }
-            }
-
-            // if modified audio scale is less than 1 then
-            else
-            {
-                // declaring the index var
-                int index = 0;
-
-                // declaring the l var
-                double indexLocation = 0.0;
-
-                // declaring m as 1 divided by the audio scale
-                double incrementAmount = 1.0 / audScale;
-
-                // while the statement index is less than the length of audiosample do this
-                do
-                {
-                    // add audio sample[index] to the resampled list
-                    resampledList.Add(audSample[index]);
-
-                    // m is added into l
-                    indexLocation += incrementAmount;
-
-                    // index is now declared as l
-                    index = Convert.ToInt32(indexLocation);
-
-                } while (index < (audSample.Count));
-            }
-            // return the resampled list
-            return resampledList;
-        }
-        #endregion
-
-        #region Scaling Amplitude
-        /// <summary>
-        /// this function will scale the amplitude of a audio sample to either make it louder or quieter
-        /// </summary>
-        /// <param name="audSample"></param>
-        /// <param name="ampFactor"></param>
-        /// <returns>returns a newly scaled list</returns>
-        public List<int> ScalingAmplitude(List<int> audSample, int ampFactor)
-        {
-            // write to the console that the function is being ran
-            Console.WriteLine("[RUNNING]: Scaling Amplitude");
-
-            // delcares a new list to hold the scaled audio
-            List<int> ScaledList = new List<int>();
-
-            // while the statement i is less than the length of audio sample then execute loop
-            for (int i = 0; i < (audSample.Count); i++)
-            {
-                //declares variable v as audio sample instance i multiplied by the amplitude factor
-                int v = audSample[i] * ampFactor;
-
-                v = Math.Max((v), v);
-
-                v = Math.Min((v), v);
-
-                // adds v to the scaled list
-                ScaledList.Add(v);
-            }
-
-            // returns the modified audio through returning the scaled list
-            return ScaledList;
-        }
-        #endregion
-
-        #region Tone Combine
-        /// <summary>
-        /// this function takes two tones and combines them so they play at the same time
-        /// </summary>
-        /// <param name="duration"></param>
-        /// <param name="sample0"></param>
-        /// <param name="sample1"></param>
-        /// <returns>returns a combinded audio list where two tones are played simultaneously</returns>
-        public List<int> ToneCombine(double duration, List<int> sample0, List<int> sample1) {
-            // write to the console that the function is being ran
-            Console.WriteLine("[RUNNING]: Tone Combine");
-
-            // declaring new list for the two tones to combine in
-            List<int> CombinedList = new List<int>();
-
-            int sampleDuration = (int)(duration * m_sender.sampleRate);
-
-            // while the statement i is less than duration multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (sampleDuration); i++) {
-                if (sample0.Count <= i) {
-                    sample0.Add(0);
-                }
-                if (sample1.Count <= i) {
-                    sample1.Add(0);
-                }
-                CombinedList.Add((sample0[i] + sample1[i]) / 2);
-            }
-            // returns the modifed combined list
-            return CombinedList;
-        }
-        #endregion
-
-        #region White Noise
-        /// <summary>
-        /// this function creates white noise, does not require audio sample to edit
-        /// </summary>
-        /// <param name="time"></param>
-        /// <param name="resultantVol"></param>
-        /// <returns>returns the white list list</returns>
-        public List<int> WhiteNoise(double time, int resultantVol)
-        {
-            // write to the console that the function is being ran
-            Console.WriteLine("[RUNNING]: White Noise");
-
-            // declaring new list for the two tones to combine in 
-            List<int> WhiteList = new List<int>();
-
-            //create a random variable which generates new random each for loop
-            Random rand = new Random();
-
-            // while the statement i is less than time multiplied by the sample rate is true execute loop
-            for (int i = 0; i < (time * m_sender.sampleRate); i++)
-            {
-                // adds a random number between -1 and 1 to the white list
-                WhiteList.Add(rand.Next(-1, 1) * resultantVol *  m_sender.MAX_VALUE);
-            }
-            // returns modifed white list to 
-            return WhiteList;
-        }
-        #endregion
-
-        #endregion
-    }
-
 }

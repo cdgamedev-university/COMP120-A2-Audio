@@ -1,4 +1,4 @@
-﻿namespace TinkeringAudio {
+﻿namespace Tinkering_Audio {
     partial class TinkeringAudioForm {
         /// <summary>
         /// Required designer variable.
@@ -40,7 +40,7 @@
             // 
             // Villagebtn
             // 
-            this.Villagebtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Villagebtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Villagebtn.Location = new System.Drawing.Point(165, 150);
             this.Villagebtn.Name = "Villagebtn";
@@ -52,7 +52,7 @@
             // 
             // Forestbtn
             // 
-            this.Forestbtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Forestbtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Forestbtn.Location = new System.Drawing.Point(325, 150);
             this.Forestbtn.Name = "Forestbtn";
@@ -64,7 +64,7 @@
             // 
             // Cavebtn
             // 
-            this.Cavebtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Cavebtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Cavebtn.Location = new System.Drawing.Point(485, 150);
             this.Cavebtn.Name = "Cavebtn";
@@ -76,7 +76,7 @@
             // 
             // Oceanbtn
             // 
-            this.Oceanbtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Oceanbtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Oceanbtn.Location = new System.Drawing.Point(645, 150);
             this.Oceanbtn.Name = "Oceanbtn";
@@ -110,7 +110,7 @@
             // 
             // btn_PlayAudio
             // 
-            this.btn_PlayAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btn_PlayAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_PlayAudio.Location = new System.Drawing.Point(430, 25);
             this.btn_PlayAudio.Name = "btn_PlayAudio";
@@ -122,7 +122,7 @@
             // 
             // btn_StopAudio
             // 
-            this.btn_StopAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btn_StopAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_StopAudio.Location = new System.Drawing.Point(555, 25);
             this.btn_StopAudio.Name = "btn_StopAudio";
@@ -134,7 +134,7 @@
             // 
             // btn_PauseAudio
             // 
-            this.btn_PauseAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btn_PauseAudio.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_PauseAudio.Location = new System.Drawing.Point(305, 25);
             this.btn_PauseAudio.Name = "btn_PauseAudio";
@@ -146,7 +146,7 @@
             // 
             // cbox_WaveType
             // 
-            this.cbox_WaveType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.cbox_WaveType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbox_WaveType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbox_WaveType.FormattingEnabled = true;
@@ -179,7 +179,7 @@
             // 
             // lbl_ChangeWaveType
             // 
-            this.lbl_ChangeWaveType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lbl_ChangeWaveType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lbl_ChangeWaveType.Location = new System.Drawing.Point(355, 60);
             this.lbl_ChangeWaveType.Name = "lbl_ChangeWaveType";

@@ -108,9 +108,9 @@ namespace Tinkering_Audio {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        public static System.IO.UnmanagedMemoryStream Wind {
+        public static System.IO.UnmanagedMemoryStream wind {
             get {
-                return ResourceManager.GetStream("Wind", resourceCulture);
+                return ResourceManager.GetStream("wind", resourceCulture);
             }
         }
     }

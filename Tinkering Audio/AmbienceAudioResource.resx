@@ -133,7 +133,7 @@
   <data name="Water_Drip_Underground" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Water Drip Underground.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Wind" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Wind.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="wind" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\wind.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
