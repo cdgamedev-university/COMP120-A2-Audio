@@ -67,7 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Resources\AMP.wav" />
     <None Include="Resources\Ambience Cave Drips.wav" />
-    <None Include="Resources\wind.wav" />
+    <None Include="Resources\Wind.wav" />
     <None Include="Resources\Water Drip Underground.wav" />
     <None Include="Resources\Lawrie phone.wav" />
     <None Include="Resources\Cicadia Sounds.wav" />

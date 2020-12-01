@@ -299,14 +299,13 @@ namespace Tinkering_Audio {
                     throw new ArgumentNullException();
                 }
 
-                Stream clip = IncludedAudio.Ambience_Cave_Drips;
-                List<int> caveDripAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
+                Stream clip = IncludedAudio.Cicadia_Sounds;
+                List<int> villageBackgroundAudio = m_sender.ConvertToListInt(m_sender.audioFileIO.DecodeAudioClip(clip));
 
-                caveDripAudio = Normalisation(caveDripAudio);
+                villageBackgroundAudio = Normalisation(villageBackgroundAudio);
+                villageBackgroundAudio = ScalingAmplitude(villageBackgroundAudio, 0.1);
 
-                audioClip = ToneCombine(30, audioClip, caveDripAudio);
-
-                audioClip = AddingEchos(audioClip, 5);
+                audioClip = ToneCombine(30, audioClip, villageBackgroundAudio);
             } catch (ArgumentNullException) {
                 m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
             } catch (Exception ex) {
@@ -336,7 +335,11 @@ namespace Tinkering_Audio {
                 windAudio = Normalisation(windAudio);
 
                 windAudio = ToneCombine(30, windAudio, forestBackgroundAudio);
-                windAudio = ScalingAmplitude(windAudio, 1);
+                windAudio = ScalingAmplitude(windAudio, 0.1);
+
+                audioClip = ScalingAmplitude(audioClip, 4);
+
+                audioClip = ToneCombine(30, windAudio, audioClip);
             } catch (ArgumentNullException) {
                 m_sender.exceptionHandler.Handle("Error: Argument Null Exception", ExceptionHandler.ExceptionType.NoAudioLoaded_Manipulation);
             } catch (Exception ex) {
